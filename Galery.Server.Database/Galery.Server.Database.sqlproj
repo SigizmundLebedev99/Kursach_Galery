@@ -57,16 +57,24 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
+    <Folder Include="Procedure" />
+    <Folder Include="Tables" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="ApplicationRole.sql" />
-    <Build Include="ApplicationUser.sql" />
-    <Build Include="ApplicationUserRole.sql" />
-    <Build Include="Picture.sql" />
-    <Build Include="PictureLikes.sql" />
-    <Build Include="Comments.sql" />
+    <Build Include="Tables\ApplicationRole.sql" />
+    <Build Include="Procedure\GetCommentsForPicture.sql" />
+    <Build Include="Tables\Tag.sql" />
+    <Build Include="Tables\PictureTag.sql" />
+    <Build Include="Procedure\GetTopPicturesInfo.sql" />
   </ItemGroup>
   <ItemGroup>
-    <RefactorLog Include="Galery.Server.Database.refactorlog" />
+    <Build Include="Tables\ApplicationUser.sql" />
+    <Build Include="Tables\ApplicationUserRole.sql" />
+    <Build Include="Tables\Comments.sql" />
+    <Build Include="Tables\Picture.sql" />
+    <Build Include="Tables\PictureLikes.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Galery.Server.Database.publish.xml" />
   </ItemGroup>
 </Project>

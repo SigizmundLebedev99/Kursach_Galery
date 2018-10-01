@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Galery.Server.DAL.Models;
-using Galery.Server.DAL.Repository.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -11,7 +10,7 @@ using static Galery.Server.DAL.Helpers.QueryBuilder;
 
 namespace Galery.Server.DAL.Repository
 {
-    public class PictureRepository : IPictureRepository
+    public class PictureRepository
     {
         readonly DbProviderFactory _factory;
         readonly string _connectionString;
@@ -22,13 +21,18 @@ namespace Galery.Server.DAL.Repository
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
-        public async Task<Picture> CreateAsync(Picture entity)
+        public async Task<Picture> CreateAsync(Picture entity, IEnumerable<int> tagIds)
         {
             using(DbConnection connection = _factory.CreateConnection())
             {
                 connection.ConnectionString = _connectionString;
                 await connection.OpenAsync();
                 entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
+                var sb = new StringBuilder();
+                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], [{nameof(PictureTag.TagId)}]) values ");
+                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+                sb.Remove(sb.Length - 1, 1);
+                await connection.ExecuteAsync(sb.ToString());
             }
             return entity;
         }
@@ -111,6 +115,29 @@ namespace Galery.Server.DAL.Repository
                 connection.ConnectionString = _connectionString;
                 await connection.OpenAsync();
                 await connection.ExecuteAsync(CreateQuery(like), like);
+            }
+        }
+
+        public async Task<bool> IsLikeExist(PictureLikes like)
+        {
+            using (DbConnection connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QuerySingleAsync<bool>($"select iif(@{nameof(like.UserId)} = any (select [{nameof(PictureLikes.UserId)}] " +
+                    $"from [PictureLikes] where PictureId = @{nameof(like.PictureId)}),1,0)", like);
+            }
+        }
+
+        public async Task<int> PicturesCountAsync(int userId)
+        {
+            using (DbConnection connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QueryFirstAsync<int>($"select count([{nameof(Picture.Id)}]) from [{nameof(Picture)}] " +
+                    $"where [{nameof(Picture.UserId)}] = @{nameof(userId)}",
+                    new { userId });
             }
         }
     }

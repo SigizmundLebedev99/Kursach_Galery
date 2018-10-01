@@ -10,7 +10,7 @@ using static Galery.Server.DAL.Helpers.QueryBuilder;
 
 namespace Galery.Server.DAL.Repository
 {
-    class CommentRepository : IRepository<Comment>
+    public class CommentRepository
     {
         readonly DbProviderFactory _factory;
         readonly string _connectionString;
@@ -19,6 +19,20 @@ namespace Galery.Server.DAL.Repository
         {
             _factory = factory;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        public async Task<int> CountForPublication(int publicationId)
+        {
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QuerySingleAsync<int>(
+                    $"select count([{nameof(Comment.Id)}]) " +
+                    $"from [{nameof(Comment)}] " +
+                    $"where [{nameof(Comment.PictureId)}] = @{nameof(publicationId)}",
+                    new { publicationId });
+            }
         }
 
         public async Task<Comment> CreateAsync(Comment entity)
@@ -32,19 +46,47 @@ namespace Galery.Server.DAL.Repository
             return entity;
         }
 
-        public Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            using (DbConnection connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                await connection.ExecuteAsync($"delete from [{nameof(Comment)}] where [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
+            }
         }
 
-        public Task<Comment> FindByIdAsync(int id)
+        public async Task<Comment> FindByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QueryFirstOrDefaultAsync<Comment>($"SELECT * FROM [{nameof(Comment)}] WHERE [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
+            }
         }
 
-        public Task UpdateAsync(Comment entity)
+        public async Task<IEnumerable<Comment>> GetCommentsForPublication(int publicationId, int? skip, int? take)
         {
-            throw new NotImplementedException();
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QueryAsync<Comment>(
+                    $"SELECT * " +
+                    $"FROM [{nameof(Comment)}] " +
+                    $"WHERE [{nameof(Comment.PictureId)}] = @{nameof(publicationId)} " + TakeSkipQuery<Comment>(c=>c.PictureId, skip, take), new { publicationId });
+            }
+        }
+
+        public async Task UpdateAsync(Comment entity)
+        {
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                await connection.ExecuteAsync(UpdateQuery(entity), entity);
+            }
         }
     }
 }

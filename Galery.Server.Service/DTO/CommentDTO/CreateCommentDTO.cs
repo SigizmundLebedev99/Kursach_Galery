@@ -1,11 +1,10 @@
-﻿using Galery.Server.DAL.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Galery.Server.DAL.Models
+namespace Galery.Server.Service.DTO.CommentDTO
 {
-    public class Comment : BaseEntity
+    public class CreateCommentDTO
     {
         public int PictureId { get; set; }
         public int UserId { get; set; }
