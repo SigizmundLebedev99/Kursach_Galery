@@ -3,6 +3,7 @@ using Galery.Server.DAL.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,16 +24,32 @@ namespace Galery.Server.DAL.Repository
 
         public async Task<Picture> CreateAsync(Picture entity, IEnumerable<int> tagIds)
         {
-            using(DbConnection connection = _factory.CreateConnection())
+            using (DbConnection connection = _factory.CreateConnection())
             {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
-                var sb = new StringBuilder();
-                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], [{nameof(PictureTag.TagId)}]) values ");
-                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
-                sb.Remove(sb.Length - 1, 1);
-                await connection.ExecuteAsync(sb.ToString());
+                IDbTransaction transaction = null;
+                try
+                {
+                    transaction = connection.BeginTransaction();
+                    connection.ConnectionString = _connectionString;
+
+                    await connection.OpenAsync();
+                    entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity, transaction);
+                    var sb = new StringBuilder();
+
+                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], [{nameof(PictureTag.TagId)}]) values ");
+                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+
+                    sb.Remove(sb.Length - 1, 1);
+
+                    await connection.ExecuteAsync(sb.ToString(),null, transaction);
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
             return entity;
         }
