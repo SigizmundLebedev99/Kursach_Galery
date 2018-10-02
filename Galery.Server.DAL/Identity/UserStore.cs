@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using static Galery.Server.DAL.Helpers.QueryBuilder;
 
 namespace Galery.Server.DAL.Identity
 {
-    public class UserStore : IUserStore<User>, IUserEmailStore<User>, IUserPasswordStore<User>
+    public class UserStore : IUserStore<User>, IUserEmailStore<User>, IUserPasswordStore<User>, IUserRoleStore<User>
     {
         private readonly string _connectionString;
         private readonly DbProviderFactory _factory;
@@ -22,6 +23,28 @@ namespace Galery.Server.DAL.Identity
         {
             _connectionString = connStr.GetConnectionString("DefaultConnection");
             _factory = factory;
+        }
+
+        public async Task AddToRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync(cancellationToken);
+                var normalizedName = roleName.ToUpper();
+                var roleId = await connection.ExecuteScalarAsync<int?>($"SELECT [{nameof(Role.Id)}] FROM [{nameof(Role)}] WHERE [{nameof(Role.NormalizedName)}] = @{nameof(normalizedName)}", new { normalizedName });
+                if (!roleId.HasValue)
+                {
+                    var role = new Role { Name = roleName, NormalizedName = normalizedName };
+                    roleId = await connection.ExecuteAsync(CreateQuery(role), role);
+                }
+                var userRole = new UserRole { RoleId = roleId.Value, UserId = user.Id };
+                await connection.ExecuteAsync($"IF NOT EXISTS(SELECT 1 FROM [{nameof(UserRole)}] " +
+                    $"WHERE [{nameof(UserRole.UserId)}] = @{nameof(UserRole.UserId)} AND [{nameof(UserRole.RoleId)}] = @{nameof(UserRole.RoleId)}) " +
+                    CreateQuery(userRole), userRole);
+            }
         }
 
         public async Task<IdentityResult> CreateAsync(User user, CancellationToken cancellationToken)
@@ -74,10 +97,11 @@ namespace Galery.Server.DAL.Identity
 
             using (var connection = _factory.CreateConnection())
             {
+                int id = Convert.ToInt32(userId);
                 connection.ConnectionString = _connectionString;
                 await connection.OpenAsync(cancellationToken);
                 return await connection.QuerySingleOrDefaultAsync<User>($@"SELECT * FROM [{nameof(User)}]
-                WHERE [Id] = @{nameof(userId)}", new { userId });
+                WHERE [Id] = @{nameof(id)}", new { id });
             }
         }
 
@@ -119,6 +143,21 @@ namespace Galery.Server.DAL.Identity
             return Task.FromResult(user.PasswordHash);
         }
 
+        public async Task<IList<string>> GetRolesAsync(User user, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync(cancellationToken);
+                int userId = user.Id;
+                var queryResults = await connection.QueryAsync<Role>(
+                    m2mJoinQuery<Role, UserRole>(e=>e.Id, e=>e.RoleId, e=>e.UserId, nameof(userId)), new { userId });
+                return queryResults.Select(e=>e.Name).ToList();
+            }
+        }
+
         public Task<string> GetUserIdAsync(User user, CancellationToken cancellationToken)
         {
             return Task.FromResult(user.Id.ToString());
@@ -129,9 +168,68 @@ namespace Galery.Server.DAL.Identity
             return Task.FromResult(user.UserName);
         }
 
+        public async Task<IList<User>> GetUsersInRoleAsync(string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync(cancellationToken);
+                var queryResults = await connection.QueryAsync<User>($"SELECT u.* FROM [{nameof(User)}] u " +
+                    $"INNER JOIN [{nameof(UserRole)}] ur ON ur.[{nameof(UserRole.UserId)}] = u.[{nameof(User.Id)}] " +
+                    $"INNER JOIN [{nameof(Role)}] r ON r.[{nameof(Role.Id)}] = ur.[{nameof(UserRole.RoleId)}] " +
+                    $"WHERE r.[{nameof(Role.NormalizedName)}] = @normalizedName",
+                    new { normalizedName = roleName.ToUpper() });
+
+                return queryResults.ToList();
+            }
+        }
+
         public Task<bool> HasPasswordAsync(User user, CancellationToken cancellationToken)
         {
             return Task.FromResult(user.PasswordHash != null);
+        }
+
+        public async Task<bool> IsInRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync(cancellationToken);
+                var roleId = await connection.ExecuteScalarAsync<int?>($"SELECT [{nameof(Role.Id)}] " +
+                    $"FROM [{nameof(Role)}] " +
+                    $"WHERE [{nameof(Role.NormalizedName)}] = @normalizedName", 
+                    new { normalizedName = roleName.ToUpper() });
+                if (roleId == default(int)) return false;
+                var matchingRoles = await connection.ExecuteScalarAsync<int>($"SELECT COUNT(*) " +
+                    $"FROM [{nameof(UserRole)}] " +
+                    $"WHERE [{nameof(UserRole.UserId)}] = @userId " +
+                    $"AND [{nameof(UserRole.RoleId)}] = @{nameof(roleId)}",
+                    new { userId = user.Id, roleId });
+
+                return matchingRoles > 0;
+            }
+        }
+
+        public async Task RemoveFromRoleAsync(User user, string roleName, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync(cancellationToken);
+                var roleId = await connection.ExecuteScalarAsync<int?>($"SELECT [Id] " +
+                    $"FROM [{nameof(Role)}] " +
+                    $"WHERE [{nameof(Role.NormalizedName)}] = @normalizedName", 
+                    new { normalizedName = roleName.ToUpper() });
+                if (!roleId.HasValue)
+                    await connection.ExecuteAsync($"DELETE FROM [{nameof(UserRole)}] " +
+                        $"WHERE [{nameof(UserRole.UserId)}] = @userId AND [{nameof(UserRole.RoleId)}] = @{nameof(roleId)}", new { userId = user.Id, roleId });
+            }
         }
 
         public Task SetEmailAsync(User user, string email, CancellationToken cancellationToken)

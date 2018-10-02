@@ -7,3 +7,6 @@
     [UserId] int not null references [User](Id), 
     [Description] NVARCHAR(MAX) NULL
 )
+
+go
+CREATE INDEX [IX_Picture_Id] ON [dbo].[Picture] ([Id])

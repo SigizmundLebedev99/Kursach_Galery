@@ -11,7 +11,7 @@ namespace Galery.Server.Service.DTO.PictureDTO
         public string Avatar { get; set; }
         public string UserName{get;set;}
         public string Name { get; set; }
-        public string ImagePath { get; set; }
         public int UserId { get; set; }
+        public string Description { get; set; }
     }
 }

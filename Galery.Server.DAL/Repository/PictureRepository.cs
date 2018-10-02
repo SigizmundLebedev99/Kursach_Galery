@@ -34,9 +34,10 @@ namespace Galery.Server.DAL.Repository
 
                     await connection.OpenAsync();
                     entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity, transaction);
-                    var sb = new StringBuilder();
 
-                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], [{nameof(PictureTag.TagId)}]) values ");
+                    var sb = new StringBuilder();
+                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                        $"[{nameof(PictureTag.TagId)}]) values ");
                     foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
 
                     sb.Remove(sb.Length - 1, 1);
