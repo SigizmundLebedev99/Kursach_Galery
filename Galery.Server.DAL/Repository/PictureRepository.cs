@@ -75,13 +75,35 @@ namespace Galery.Server.DAL.Repository
             }
         }
 
-        public async Task UpdateAsync(Picture entity)
+        public async Task UpdateAsync(Picture entity, IEnumerable<int> tagIds)
         {
-            using (var connection = _factory.CreateConnection())
+            using (DbConnection connection = _factory.CreateConnection())
             {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(UpdateQuery(entity), entity);
+                IDbTransaction transaction = null;
+                try
+                {
+                    transaction = connection.BeginTransaction();
+                    connection.ConnectionString = _connectionString;
+
+                    await connection.OpenAsync();
+                    entity.Id = await connection.QuerySingleAsync<int>(UpdateQuery(entity), entity, transaction);
+                    var sb = new StringBuilder();
+                    sb.Append($"delete from [{nameof(PictureTag)}] where [{nameof(PictureTag.PictureId)}] = {entity.Id}");
+                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                        $"[{nameof(PictureTag.TagId)}]) values ");
+                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+
+                    sb.Remove(sb.Length - 1, 1);
+
+                    await connection.ExecuteAsync(sb.ToString(), null, transaction);
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 

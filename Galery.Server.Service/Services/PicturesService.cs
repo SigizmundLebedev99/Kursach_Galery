@@ -4,8 +4,10 @@ using Galery.Server.DAL;
 using Galery.Server.DAL.Models;
 using Galery.Server.DAL.Repository;
 using Galery.Server.Interfaces;
+using Galery.Server.Service.DTO.CommentDTO;
 using Galery.Server.Service.DTO.PictureDTO;
 using Galery.Server.Service.Exceptions;
+using Galery.Server.Service.Infrostructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -104,11 +106,14 @@ namespace Galery.Server.Services
         {
             try
             {
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                    throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
                 using (var connection = _factory.CreateConnection())
                 {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryAsync<PictureInfoDTO>("GetLikedByUser", new { userId, skip, take}, null,null, CommandType.StoredProcedure);
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    return await connection.QueryAsync<PictureInfoDTO>("GetLikedByUser", new { userId, skip, take}, null,null, CommandType.StoredProcedure);
                 }
             }
             catch (NotFoundException)
@@ -117,38 +122,185 @@ namespace Galery.Server.Services
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
             }
         }
 
-        public Task<PictureFullInfoDTO> GetPictureByIdAnonimousAsync(int id)
+        public async Task<PictureFullInfoDTO> GetPictureByIdAnonimousAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var pic = await uow.Pictures.FindByIdAsync(id);
+                if (pic == null)
+                    throw new NotFoundException($"Не удалось найти картину с id = {id}");
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var result = await connection.QueryFirstOrDefaultAsync<PictureFullInfoDTO>("GetPicByIdAnonimous", new { id }, null, null, CommandType.StoredProcedure);
+                    result.Tags = await uow.Tags.GetTagsForPicture(id);
+                    return result;
+                }
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
         }
 
-        public Task<PictureFullInfoDTO> GetPictureByIdAsync(int id, int userId)
+        public async Task<OperationResult<PictureFullInfoDTO>> GetPictureByIdAsync(int id, int userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var operRes = new OperationResult<PictureFullInfoDTO>(true);
+                var pic = await uow.Pictures.FindByIdAsync(id);
+                if (pic == null)
+                    operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
+                var user = await _userManager.FindByIdAsync(userId.ToString());
+                if (user == null)
+                    operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {userId}");
+
+                if (!operRes.Sucseeded)
+                    return operRes;
+
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var result = await connection.QueryFirstOrDefaultAsync<PictureFullInfoDTO>("GetPictureById", new { id, userId }, null, null, CommandType.StoredProcedure);
+                    result.CommentList = await connection.QueryAsync<CommentInfoDTO>("GetCommentsForPicture", new { pictureId = id }, null, null, CommandType.StoredProcedure);
+                    result.Tags = await uow.Tags.GetTagsForPicture(id);
+                    operRes.Results.Add(result);
+                    return operRes;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
         }
 
-        public Task<IEnumerable<PictureInfoWithFeedbackDTO>> GetTopPicturesAsync(int? skip, int? take)
+        public async Task<IEnumerable<PictureInfoDTO>> GetPictursByTag(int tagId, int? skip, int? take)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    return await connection.QueryAsync<PictureInfoDTO>("GetPicturesByTag", new { tagId, skip, take }, null, null, CommandType.StoredProcedure);
+                }
+            }
+            catch (NotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
         }
 
-        public Task RemoveLikeAsync(int userId, int pictureId)
+        public async Task<IEnumerable<PictureInfoWithFeedbackDTO>> GetTopPicturesAsync(int? skip, int? take)
         {
-            throw new NotImplementedException();
+            try
+            {
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    return await connection.QueryAsync<PictureInfoWithFeedbackDTO>("GetTopPicturesInfo", new { skip, take }, null, null, CommandType.StoredProcedure);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
         }
 
-        public Task SetLikeAsync(int userId, int pictureId)
+        public async Task RemoveLikeAsync(int userId, int pictureId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var like = new PictureLikes { PictureId = pictureId, UserId = userId };
+                if (await uow.Pictures.IsLikeExist(like))
+                {
+                    using (var connection = _factory.CreateConnection())
+                    {
+                        connection.ConnectionString = _connectionString;
+                        await connection.OpenAsync();
+                        await connection.ExecuteAsync($"DELETE FROM {nameof(PictureLikes)} " +
+                            $"WHERE {nameof(PictureLikes.UserId)} = @{nameof(userId)} AND {nameof(PictureLikes.PictureId)} = @{nameof(pictureId)}",
+                            new { userId, pictureId });
+                    }
+                }
+                throw new NotFoundException($"Не удалось найти лайк пользователя с id = {userId} для картины {pictureId}");
+            }
+            catch(NotFoundException ex)
+            {
+                throw;
+            }
+            catch(Exception ex)
+            {
+                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+            }
         }
 
-        public Task<PictureInfoDTO> UpdatePictureAsync(int id, CreatePictureDTO model)
+        public async Task SetLikeAsync(int userId, int pictureId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var like = new PictureLikes { PictureId = pictureId, UserId = userId };
+                if (!await uow.Pictures.IsLikeExist(like))
+                    await uow.Pictures.PushLike(like);
+                else
+                    throw new NotFoundException($"Лайк пользователя с id = {userId} для картины {pictureId} уже существует");
+            }
+            catch (NotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+            }
+        }
+
+        public async Task<OperationResult<PictureInfoDTO>> UpdatePictureAsync(int id, CreatePictureDTO model)
+        {
+            try
+            {
+                var operRes = new OperationResult<PictureInfoDTO>(true);
+                var pic = await uow.Pictures.FindByIdAsync(id);
+                if (pic == null)
+                    operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
+                var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+                if (user == null)
+                    operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {model.UserId}");
+
+                if (!operRes.Sucseeded)
+                    return operRes;
+                var entity = _mapper.Map<Picture>(model);
+                entity.Id = id;
+                await uow.Pictures.UpdateAsync(entity, model.TagIds);
+                var result = _mapper.Map<PictureInfoDTO>(entity);
+                result.UserName = user.UserName;
+                result.Avatar = user.Avatar;
+                operRes.Results.Add(result);
+                return operRes;
+            }
+            catch (NotFoundException ex)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+            }
         }
     }
 }

@@ -4,13 +4,10 @@ using System.Text;
 
 namespace Galery.Server.Service.DTO.PictureDTO
 {
-    public class PictureInfoDTO
+    public class TagDTO
     {
         public int Id { get; set; }
-        public DateTime DateOfCreation { get; set; }
-        public string Avatar { get; set; }
-        public string UserName{get;set;}
         public string Name { get; set; }
-        public int UserId { get; set; }
+        public int? PicturesCount { get; set; }
     }
 }

@@ -60,5 +60,15 @@ namespace Galery.Server.DAL.Repository
                 await connection.ExecuteAsync(UpdateQuery(entity), entity);
             }
         }
+
+        public async Task<IEnumerable<Tag>> GetTagsForPicture(int pictureId)
+        {
+            using (var connection = _factory.CreateConnection())
+            {
+                connection.ConnectionString = _connectionString;
+                await connection.OpenAsync();
+                return await connection.QueryAsync<Tag>(m2mJoinQuery<Tag, PictureTag>(e=>e.Id, e=>e.TagId, e=>e.PictureId, nameof(pictureId)), new { pictureId});
+            }
+        }
     }
 }

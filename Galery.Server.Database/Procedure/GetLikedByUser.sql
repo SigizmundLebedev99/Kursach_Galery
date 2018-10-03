@@ -10,4 +10,4 @@ AS
 	order by pl.UserId
 		offset @skip rows
 		fetch next @take rows only) as Pics JOIN [User] as u on Pics.UserId = u.Id
-RETURN 0
+
