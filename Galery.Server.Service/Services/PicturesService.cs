@@ -8,6 +8,7 @@ using Galery.Server.Service.DTO.CommentDTO;
 using Galery.Server.Service.DTO.PictureDTO;
 using Galery.Server.Service.Exceptions;
 using Galery.Server.Service.Infrostructure;
+using Galery.Server.Service.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -26,28 +27,34 @@ namespace Galery.Server.Services
         readonly DbProviderFactory _factory;
         readonly UserManager<User> _userManager;
         readonly IMapper _mapper;
+        readonly IFileWorkService _file;
 
         public PicturesService(IUnitOfWork uow, 
             DbProviderFactory factory, 
             IConfiguration configuration, 
             UserManager<User> userManager,
-            IMapper mapper)
+            IMapper mapper,
+            IFileWorkService file)
         {
             this.uow = uow;
             _factory = factory;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
             _userManager = userManager;
             _mapper = mapper;
+            _file = file;
         }
 
         public async Task<PictureInfoDTO> CreatePictureAsync(CreatePictureDTO model)
         {
             try
             {
+                var filePath = await _file.SavePicture(model.Image);
                 var user = await _userManager.FindByIdAsync(model.UserId.ToString());
                 if (user == null)
                     throw new NotFoundException($"Не удалось найти пользователя с id = {model.UserId}");
                 var entity = _mapper.Map<Picture>(model);
+                entity.ImagePath = filePath;
+                entity.DateOfCreation = DateTime.Now;
                 entity = await uow.Pictures.CreateAsync(entity, model.TagIds);
                 var result = _mapper.Map<PictureInfoDTO>(entity);
                 result.Avatar = user.Avatar;
@@ -164,7 +171,7 @@ namespace Galery.Server.Services
                 if (user == null)
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {userId}");
 
-                if (!operRes.Sucseeded)
+                if (!operRes.Succeeded)
                     return operRes;
 
                 using (var connection = _factory.CreateConnection())
@@ -282,10 +289,18 @@ namespace Galery.Server.Services
                 if (user == null)
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {model.UserId}");
 
-                if (!operRes.Sucseeded)
+                if (!operRes.Succeeded)
                     return operRes;
+
                 var entity = _mapper.Map<Picture>(model);
                 entity.Id = id;
+
+                if (model.Image != null)
+                {
+                    _file.RemoveFile(pic.ImagePath);
+                    entity.ImagePath = await _file.SavePicture(model.Image);
+                }
+                
                 await uow.Pictures.UpdateAsync(entity, model.TagIds);
                 var result = _mapper.Map<PictureInfoDTO>(entity);
                 result.UserName = user.UserName;

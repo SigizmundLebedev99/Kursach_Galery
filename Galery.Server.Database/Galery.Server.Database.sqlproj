@@ -66,6 +66,11 @@
     <Build Include="Tables\Tag.sql" />
     <Build Include="Tables\PictureTag.sql" />
     <Build Include="Procedure\GetTopPicturesInfo.sql" />
+    <Build Include="Procedure\GetLikedByUser.sql" />
+    <Build Include="Procedure\GetPictureById.sql" />
+    <Build Include="Procedure\GetTagsWithPicCount.sql" />
+    <Build Include="Procedure\GetPicByIdAnonimous.sql" />
+    <Build Include="Procedure\GetPicturesByTag.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />
