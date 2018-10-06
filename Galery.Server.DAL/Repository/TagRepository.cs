@@ -11,64 +11,30 @@ namespace Galery.Server.DAL.Repository
 {
     public class TagRepository
     {
-        readonly DbProviderFactory _factory;
-        readonly string _connectionString;
-
-        public TagRepository(DbProviderFactory factory, IConfiguration configuration)
+        public async Task<Tag> CreateAsync(DbConnection connection, Tag entity)
         {
-            _factory = factory;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
-        }
-
-        public async Task<Tag> CreateAsync(Tag entity)
-        {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
-            }
+            entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
             return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(DbConnection connection, int id)
         {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync($"delete from [{nameof(Tag)}] where [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
-            }
+            await connection.ExecuteAsync($"delete from [{nameof(Tag)}] where [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task<Tag> FindByIdAsync(int id)
-        {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryFirstOrDefaultAsync<Tag>($"SELECT * FROM [{nameof(Tag)}] WHERE [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
-            }
+        public async Task<Tag> FindByIdAsync(DbConnection connection, int id)
+        {     
+            return await connection.QueryFirstOrDefaultAsync<Tag>($"SELECT * FROM [{nameof(Tag)}] WHERE [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task UpdateAsync(Tag entity)
-        {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(UpdateQuery(entity), entity);
-            }
+        public async Task UpdateAsync(DbConnection connection, Tag entity)
+        {     
+            await connection.ExecuteAsync(UpdateQuery(entity), entity);
         }
 
-        public async Task<IEnumerable<Tag>> GetTagsForPicture(int pictureId)
+        public async Task<IEnumerable<Tag>> GetTagsForPicture(DbConnection connection, int pictureId)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryAsync<Tag>(m2mJoinQuery<Tag, PictureTag>(e=>e.Id, e=>e.TagId, e=>e.PictureId, nameof(pictureId)), new { pictureId});
-            }
+            return await connection.QueryAsync<Tag>(m2mJoinQuery<Tag, PictureTag>(e=>e.Id, e=>e.TagId, e=>e.PictureId, nameof(pictureId)), new { pictureId}); 
         }
     }
 }

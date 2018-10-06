@@ -12,81 +12,43 @@ namespace Galery.Server.DAL.Repository
 {
     public class CommentRepository
     {
-        readonly DbProviderFactory _factory;
-        readonly string _connectionString;
-
-        public CommentRepository(DbProviderFactory factory, IConfiguration configuration)
-        {
-            _factory = factory;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        public async Task<int> CountForPublication(DbConnection connection, int publicationId)
+        {   
+            return await connection.QuerySingleAsync<int>(
+                $"select count([{nameof(Comment.Id)}]) " +
+                $"from [{nameof(Comment)}] " +
+                $"where [{nameof(Comment.PictureId)}] = @{nameof(publicationId)}",
+                new { publicationId });
+            
         }
 
-        public async Task<int> CountForPublication(int publicationId)
+        public async Task<Comment> CreateAsync(DbConnection connection, Comment entity)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QuerySingleAsync<int>(
-                    $"select count([{nameof(Comment.Id)}]) " +
-                    $"from [{nameof(Comment)}] " +
-                    $"where [{nameof(Comment.PictureId)}] = @{nameof(publicationId)}",
-                    new { publicationId });
-            }
-        }
-
-        public async Task<Comment> CreateAsync(Comment entity)
-        {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
-            }
+            entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity);
             return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(DbConnection connection, int id)
         {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync($"delete from [{nameof(Comment)}] where [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
-            }
+            await connection.ExecuteAsync($"delete from [{nameof(Comment)}] where [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task<Comment> FindByIdAsync(int id)
+        public async Task<Comment> FindByIdAsync(DbConnection connection, int id)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryFirstOrDefaultAsync<Comment>($"SELECT * FROM [{nameof(Comment)}] WHERE [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
-            }
+            return await connection.QueryFirstOrDefaultAsync<Comment>($"SELECT * FROM [{nameof(Comment)}] WHERE [{nameof(Comment.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task<IEnumerable<Comment>> GetCommentsForPublication(int publicationId, int? skip, int? take)
+        public async Task<IEnumerable<Comment>> GetCommentsForPublication(DbConnection connection, int publicationId, int? skip, int? take)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryAsync<Comment>(
+            return await connection.QueryAsync<Comment>(
                     $"SELECT * " +
                     $"FROM [{nameof(Comment)}] " +
                     $"WHERE [{nameof(Comment.PictureId)}] = @{nameof(publicationId)} " + TakeSkipQuery<Comment>(c=>c.PictureId, skip, take), new { publicationId });
-            }
         }
 
-        public async Task UpdateAsync(Comment entity)
+        public async Task UpdateAsync(DbConnection connection, Comment entity)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(UpdateQuery(entity), entity);
-            }
+            await connection.ExecuteAsync(UpdateQuery(entity), entity);
         }
     }
 }

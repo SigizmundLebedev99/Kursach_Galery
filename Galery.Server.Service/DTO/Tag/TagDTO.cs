@@ -8,6 +8,6 @@ namespace Galery.Server.Service.DTO.PictureDTO
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int? PicturesCount { get; set; }
+        public int PicturesCount { get; set; }
     }
 }

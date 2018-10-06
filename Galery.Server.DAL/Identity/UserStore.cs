@@ -86,7 +86,7 @@ namespace Galery.Server.DAL.Identity
             {
                 connection.ConnectionString = _connectionString;
                 await connection.OpenAsync(cancellationToken);
-                return await connection.QuerySingleOrDefaultAsync<User>($@"SELECT * FROM [ApplicationUser]
+                return await connection.QuerySingleOrDefaultAsync<User>($@"SELECT * FROM [{nameof(User)}]
                 WHERE [NormalizedEmail] = @{nameof(normalizedEmail)}", new { normalizedEmail });
             }
         }

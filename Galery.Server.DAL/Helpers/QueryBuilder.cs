@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Galery.Server.DAL.Helpers
 {
-    static class QueryBuilder
+    public static class QueryBuilder
     {
         static Dictionary<string, string> CreateQueries = new Dictionary<string, string>();
         static Dictionary<string, string> UpdateQueries = new Dictionary<string, string>();
@@ -75,22 +75,23 @@ namespace Galery.Server.DAL.Helpers
         public static string m2mJoinQuery<Entity1, Entity2>(Expression<Func<Entity1, object>> joinedProp1,
             Expression<Func<Entity2, object>> joinedProp2, Expression<Func<Entity2, object>> filterParam, string paramName)
         {
-            Type joined = typeof(Entity1);
-            string key = $"{joined} {nameof(Entity2)}";
+            Type type1 = typeof(Entity1);
+            Type type2 = typeof(Entity2);
+            string key = $"{type1} {nameof(Entity2)}";
 
             if (m2mJoinQueries.ContainsKey(key))
                 return m2mJoinQueries[key];
 
-            string variable2 = nameof(Entity2).ToUpper();
-            string variable1 = nameof(Entity1).ToUpper();
+            string variable2 = type2.Name.ToUpper();
+            string variable1 = type1.Name.ToUpper();
 
             StringBuilder sb = new StringBuilder();
             sb.Append("SELECT ");
-            foreach (var prop in joined.GetProperties())
-                sb.Append($"{variable2}.[{prop.Name}], ");
-            sb.Remove(sb.Length - 1, 1);
+            foreach (var prop in type1.GetProperties())
+                sb.Append($"{variable1}.[{prop.Name}], ");
+            sb.Remove(sb.Length - 2, 1);
 
-            string fromStr = $" FROM [{nameof(Entity2)}] AS {variable2} JOIN [{nameof(Entity1)}] AS {variable1} " +
+            string fromStr = $" FROM [{type2.Name}] AS {variable2} JOIN [{type1.Name}] AS {variable1} " +
                 $"ON {variable1}.[{PropertyName(joinedProp1)}] = {variable2}.[{PropertyName(joinedProp2)}]" +
                 $" WHERE {variable2}.[{PropertyName(filterParam)}] = @{paramName}";
 

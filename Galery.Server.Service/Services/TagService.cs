@@ -38,7 +38,12 @@ namespace Galery.Server.Service.Services
             try
             {
                 var tag = new Tag { DateOfCreation = DateTime.Now, Name = name };
-                return await uow.Tags.CreateAsync(tag);
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    return await uow.Tags.CreateAsync(connection, tag);
+                }
             }
             catch(Exception ex)
             {
@@ -50,10 +55,15 @@ namespace Galery.Server.Service.Services
         {
             try
             {
-                var entity = uow.Pictures.FindByIdAsync(id);
-                if (entity == null)
-                    throw new NotFoundException($"Не удалось найти жанр с id = {id}");
-                await uow.Tags.DeleteAsync(id);
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var entity = uow.Pictures.FindByIdAsync(connection, id);
+                    if (entity == null)
+                        throw new NotFoundException($"Не удалось найти жанр с id = {id}");
+                    await uow.Tags.DeleteAsync(connection, id);
+                }
             }
             catch (NotFoundException)
             {
@@ -73,7 +83,7 @@ namespace Galery.Server.Service.Services
                 {
                     connection.ConnectionString = _connectionString;
                     await connection.OpenAsync();
-                    return await connection.QueryAsync<TagDTO>("GetLikedByUser", null, null, null, CommandType.StoredProcedure);
+                    return await connection.QueryAsync<TagDTO>("GetTagsWithPicCount", null, null, null, CommandType.StoredProcedure);
                 }
             }
             catch (Exception ex)

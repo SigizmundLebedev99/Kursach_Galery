@@ -17,6 +17,7 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using static Galery.Server.DAL.Helpers.QueryBuilder;
 
 namespace Galery.Server.Services
 {
@@ -55,7 +56,12 @@ namespace Galery.Server.Services
                 var entity = _mapper.Map<Picture>(model);
                 entity.ImagePath = filePath;
                 entity.DateOfCreation = DateTime.Now;
-                entity = await uow.Pictures.CreateAsync(entity, model.TagIds);
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    entity = await uow.Pictures.CreateAsync(connection, entity, model.TagIds);
+                }
                 var result = _mapper.Map<PictureInfoDTO>(entity);
                 result.Avatar = user.Avatar;
                 result.UserName = user.UserName;
@@ -75,10 +81,15 @@ namespace Galery.Server.Services
         {
             try
             {
-                var entity = uow.Pictures.FindByIdAsync(id);
-                if (entity == null)
-                    throw new NotFoundException($"Не удалось найти картину с id = {id}");
-                await uow.Pictures.DeleteAsync(id);
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var entity = uow.Pictures.FindByIdAsync(connection, id);
+                    if (entity == null)
+                        throw new NotFoundException($"Не удалось найти картину с id = {id}");
+                    await uow.Pictures.DeleteAsync(connection, id);
+                }
             }
             catch (NotFoundException)
             {
@@ -97,7 +108,12 @@ namespace Galery.Server.Services
                 var user = await _userManager.FindByIdAsync(userId.ToString());
                 if (user == null)
                     throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
-                return await uow.Pictures.GetByAuthorAsync(userId, skip, take);
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    return await uow.Pictures.GetByAuthorAsync(connection, userId, skip, take);
+                }
             }
             catch (NotFoundException)
             {
@@ -137,15 +153,17 @@ namespace Galery.Server.Services
         {
             try
             {
-                var pic = await uow.Pictures.FindByIdAsync(id);
-                if (pic == null)
-                    throw new NotFoundException($"Не удалось найти картину с id = {id}");
                 using (var connection = _factory.CreateConnection())
                 {
                     connection.ConnectionString = _connectionString;
                     await connection.OpenAsync();
+                    var pic = await uow.Pictures.FindByIdAsync(connection, id);
+                    if (pic == null)
+                        throw new NotFoundException($"Не удалось найти картину с id = {id}");
+                
                     var result = await connection.QueryFirstOrDefaultAsync<PictureFullInfoDTO>("GetPicByIdAnonimous", new { id }, null, null, CommandType.StoredProcedure);
-                    result.Tags = await uow.Tags.GetTagsForPicture(id);
+                    result.Tags = await connection.QueryAsync<Tag>(m2mJoinQuery<Tag, PictureTag>(e => e.Id, e => e.TagId, e => e.PictureId, nameof(id)), new { id });
+                    result.CommentList = await connection.QueryAsync<CommentInfoDTO>("GetCommentsForPicture", new { pictureId = id }, null, null, CommandType.StoredProcedure);
                     return result;
                 }
             }
@@ -164,23 +182,25 @@ namespace Galery.Server.Services
             try
             {
                 var operRes = new OperationResult<PictureFullInfoDTO>(true);
-                var pic = await uow.Pictures.FindByIdAsync(id);
-                if (pic == null)
-                    operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
                 var user = await _userManager.FindByIdAsync(userId.ToString());
                 if (user == null)
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {userId}");
-
-                if (!operRes.Succeeded)
-                    return operRes;
-
                 using (var connection = _factory.CreateConnection())
                 {
                     connection.ConnectionString = _connectionString;
                     await connection.OpenAsync();
+                    var pic = await uow.Pictures.FindByIdAsync(connection, id);
+                    if (pic == null)
+                        operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
+                
+
+                    if (!operRes.Succeeded)
+                        return operRes;
+
+               
                     var result = await connection.QueryFirstOrDefaultAsync<PictureFullInfoDTO>("GetPictureById", new { id, userId }, null, null, CommandType.StoredProcedure);
                     result.CommentList = await connection.QueryAsync<CommentInfoDTO>("GetCommentsForPicture", new { pictureId = id }, null, null, CommandType.StoredProcedure);
-                    result.Tags = await uow.Tags.GetTagsForPicture(id);
+                    result.Tags = await uow.Tags.GetTagsForPicture(connection, id);
                     operRes.Results.Add(result);
                     return operRes;
                 }
@@ -234,12 +254,12 @@ namespace Galery.Server.Services
             try
             {
                 var like = new PictureLikes { PictureId = pictureId, UserId = userId };
-                if (await uow.Pictures.IsLikeExist(like))
+                using (var connection = _factory.CreateConnection())
                 {
-                    using (var connection = _factory.CreateConnection())
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    if (await uow.Pictures.IsLikeExist(connection, like))
                     {
-                        connection.ConnectionString = _connectionString;
-                        await connection.OpenAsync();
                         await connection.ExecuteAsync($"DELETE FROM {nameof(PictureLikes)} " +
                             $"WHERE {nameof(PictureLikes.UserId)} = @{nameof(userId)} AND {nameof(PictureLikes.PictureId)} = @{nameof(pictureId)}",
                             new { userId, pictureId });
@@ -261,11 +281,16 @@ namespace Galery.Server.Services
         {
             try
             {
-                var like = new PictureLikes { PictureId = pictureId, UserId = userId };
-                if (!await uow.Pictures.IsLikeExist(like))
-                    await uow.Pictures.PushLike(like);
-                else
-                    throw new NotFoundException($"Лайк пользователя с id = {userId} для картины {pictureId} уже существует");
+                using (var connection = _factory.CreateConnection())
+                {
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var like = new PictureLikes { PictureId = pictureId, UserId = userId };
+                    if (!await uow.Pictures.IsLikeExist(connection, like))
+                        await uow.Pictures.PushLike(connection, like);
+                    else
+                        throw new NotFoundException($"Лайк пользователя с id = {userId} для картины {pictureId} уже существует");
+                }
             }
             catch (NotFoundException ex)
             {
@@ -282,31 +307,38 @@ namespace Galery.Server.Services
             try
             {
                 var operRes = new OperationResult<PictureInfoDTO>(true);
-                var pic = await uow.Pictures.FindByIdAsync(id);
-                if (pic == null)
-                    operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
                 var user = await _userManager.FindByIdAsync(model.UserId.ToString());
                 if (user == null)
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {model.UserId}");
-
-                if (!operRes.Succeeded)
-                    return operRes;
-
-                var entity = _mapper.Map<Picture>(model);
-                entity.Id = id;
-
-                if (model.Image != null)
+                using (var connection = _factory.CreateConnection())
                 {
-                    _file.RemoveFile(pic.ImagePath);
-                    entity.ImagePath = await _file.SavePicture(model.Image);
+                    connection.ConnectionString = _connectionString;
+                    await connection.OpenAsync();
+                    var pic = await uow.Pictures.FindByIdAsync(connection, id);
+                    if (pic == null)
+                        operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
+
+
+                    if (!operRes.Succeeded)
+                        return operRes;
+
+                    var entity = _mapper.Map<Picture>(model);
+                    entity.Id = id;
+                    entity.DateOfCreation = pic.DateOfCreation;
+
+                    if (model.Image != null)
+                    {
+                        _file.RemoveFile(pic.ImagePath);
+                        entity.ImagePath = await _file.SavePicture(model.Image);
+                    }
+
+                    await uow.Pictures.UpdateAsync(connection, entity, model.TagIds);
+                    var result = _mapper.Map<PictureInfoDTO>(entity);
+                    result.UserName = user.UserName;
+                    result.Avatar = user.Avatar;
+                    operRes.Results.Add(result);
+                    return operRes;
                 }
-                
-                await uow.Pictures.UpdateAsync(entity, model.TagIds);
-                var result = _mapper.Map<PictureInfoDTO>(entity);
-                result.UserName = user.UserName;
-                result.Avatar = user.Avatar;
-                operRes.Results.Add(result);
-                return operRes;
             }
             catch (NotFoundException ex)
             {

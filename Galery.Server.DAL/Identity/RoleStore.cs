@@ -2,13 +2,13 @@
 using static Galery.Server.DAL.Helpers.QueryBuilder;
 using Galery.Server.DAL.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Galery.Server.DAL.Identity
 {

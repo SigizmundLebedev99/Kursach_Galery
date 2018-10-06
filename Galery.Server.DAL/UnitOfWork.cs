@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
 using Galery.Server.DAL.Repository;
-using Microsoft.Extensions.Configuration;
 
 namespace Galery.Server.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public UnitOfWork(DbProviderFactory factory, IConfiguration configuration)
+        public UnitOfWork()
         {
-            Comments = new CommentRepository(factory, configuration);
-            Pictures = new PictureRepository(factory, configuration);
-            Tags = new TagRepository(factory, configuration);
+            Comments = new CommentRepository();
+            Pictures = new PictureRepository();
+            Tags = new TagRepository();
         }
 
         public CommentRepository Comments { get; set; }

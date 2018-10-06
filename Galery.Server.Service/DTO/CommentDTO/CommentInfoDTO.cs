@@ -11,7 +11,7 @@ namespace Galery.Server.Service.DTO.CommentDTO
         public int PictureId { get; set; }
         public string UserName { get; set; }
         public string Avatar { get; set; }
-        public int DateOfCreation { get; set; }
+        public DateTime DateOfCreation { get; set; }
         public string Text { get; set; }
     }
 }

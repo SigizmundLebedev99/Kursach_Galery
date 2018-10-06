@@ -13,117 +13,78 @@ namespace Galery.Server.DAL.Repository
 {
     public class PictureRepository
     {
-        readonly DbProviderFactory _factory;
-        readonly string _connectionString;
-
-        public PictureRepository(DbProviderFactory factory, IConfiguration configuration)
+        public async Task<Picture> CreateAsync(DbConnection connection, Picture entity, IEnumerable<int> tagIds)
         {
-            _factory = factory;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
-        }
-
-        public async Task<Picture> CreateAsync(Picture entity, IEnumerable<int> tagIds)
-        {
-            using (DbConnection connection = _factory.CreateConnection())
+            IDbTransaction transaction = null;
+            try
             {
-                IDbTransaction transaction = null;
-                try
-                {
-                    transaction = connection.BeginTransaction();
-                    connection.ConnectionString = _connectionString;
+                transaction = connection.BeginTransaction();                   
+                entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity, transaction);
 
-                    await connection.OpenAsync();
-                    entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity, transaction);
+                var sb = new StringBuilder();
+                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                    $"[{nameof(PictureTag.TagId)}]) values ");
+                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
 
-                    var sb = new StringBuilder();
-                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
-                        $"[{nameof(PictureTag.TagId)}]) values ");
-                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+                sb.Remove(sb.Length - 1, 1);
 
-                    sb.Remove(sb.Length - 1, 1);
+                await connection.ExecuteAsync(sb.ToString(),null, transaction);
 
-                    await connection.ExecuteAsync(sb.ToString(),null, transaction);
-
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
+                transaction.Commit();
             }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+                throw;
+            }
+            
             return entity;
         }
 
-        public async Task DeleteAsync(int id)
-        {
-            using (var connection = _factory.CreateConnection())
+        public async Task DeleteAsync(DbConnection connection, int id)
+        {   
+            await connection.ExecuteAsync($"DELETE FROM [{nameof(Picture)}] WHERE [Id] = @{nameof(id)}", new { id });
+        }
+
+        public async Task<Picture> FindByIdAsync(DbConnection connection, int id)
+        {            
+            return await connection.QueryFirstOrDefaultAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.Id)}] = @{nameof(id)}", new { id });        
+        }
+
+        public async Task UpdateAsync(DbConnection connection, Picture entity, IEnumerable<int> tagIds)
+        {            
+            IDbTransaction transaction = null;
+            try
             {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync($"DELETE FROM [{nameof(Picture)}] WHERE [Id] = @{nameof(id)}", new { id });
+                transaction = connection.BeginTransaction();
+                entity.Id = await connection.QuerySingleAsync<int>(UpdateQuery(entity), entity, transaction);
+                var sb = new StringBuilder();
+                sb.Append($"delete from [{nameof(PictureTag)}] where [{nameof(PictureTag.PictureId)}] = {entity.Id}");
+                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                    $"[{nameof(PictureTag.TagId)}]) values ");
+                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+
+                sb.Remove(sb.Length - 1, 1);
+
+                await connection.ExecuteAsync(sb.ToString(), null, transaction);
+
+                transaction.Commit();
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
             }
         }
 
-        public async Task<Picture> FindByIdAsync(int id)
+        public async Task<IEnumerable<Picture>> GetByAuthorAsync(DbConnection connection, int authorId, int? skip, int? take)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryFirstOrDefaultAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.Id)}] = @{nameof(id)}", new { id });
-            }
-        }
-
-        public async Task UpdateAsync(Picture entity, IEnumerable<int> tagIds)
-        {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                IDbTransaction transaction = null;
-                try
-                {
-                    transaction = connection.BeginTransaction();
-                    connection.ConnectionString = _connectionString;
-
-                    await connection.OpenAsync();
-                    entity.Id = await connection.QuerySingleAsync<int>(UpdateQuery(entity), entity, transaction);
-                    var sb = new StringBuilder();
-                    sb.Append($"delete from [{nameof(PictureTag)}] where [{nameof(PictureTag.PictureId)}] = {entity.Id}");
-                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
-                        $"[{nameof(PictureTag.TagId)}]) values ");
-                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
-
-                    sb.Remove(sb.Length - 1, 1);
-
-                    await connection.ExecuteAsync(sb.ToString(), null, transaction);
-
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                    throw;
-                }
-            }
-        }
-
-        public async Task<IEnumerable<Picture>> GetByAuthorAsync(int authorId, int? skip, int? take)
-        {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.UserId)}] = @{nameof(authorId)}"
+                return await connection.QueryAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.UserId)}] = @{nameof(authorId)} "
                     + TakeSkipQuery<Picture>(p=>p.Id, skip, take), new { authorId });
-            }
         }
 
-        public async Task<IEnumerable<Picture>> GetLikedByUserAsync(int userId, int? skip, int? take)
+        public async Task<IEnumerable<Picture>> GetLikedByUserAsync(DbConnection connection, int userId, int? skip, int? take)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
                 return await connection.QueryAsync<Picture>(
                     m2mJoinQuery<Picture, PictureLikes>(
                         pic=>pic.Id, 
@@ -131,54 +92,33 @@ namespace Galery.Server.DAL.Repository
                         pl=>pl.UserId, 
                         nameof(userId)) + TakeSkipQuery<Picture>(p=>p.Id, skip, take), 
                     new { userId });
-            }
         }
 
-        public async Task<int> GetLikesCount(int pictureId)
+        public async Task<int> GetLikesCount(DbConnection connection, int pictureId)
         {
-            using (var connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QuerySingleAsync<int>(
-                    $"select count([{nameof(PictureLikes.UserId)}]) " +
-                    $"from [{nameof(PictureLikes)}] " +
-                    $"where [{nameof(PictureLikes.PictureId)}] = @{nameof(pictureId)}", 
-                    new { pictureId });
-            }
+            return await connection.QuerySingleAsync<int>(
+                $"select count([{nameof(PictureLikes.UserId)}]) " +
+                $"from [{nameof(PictureLikes)}] " +
+                $"where [{nameof(PictureLikes.PictureId)}] = @{nameof(pictureId)}",
+                new { pictureId });
         }
 
-        public async Task PushLike(PictureLikes like)
+        public async Task PushLike(DbConnection connection, PictureLikes like)
         {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                await connection.ExecuteAsync(CreateQuery(like), like);
-            }
+            await connection.ExecuteAsync(CreateQuery(like), like);
         }
 
-        public async Task<bool> IsLikeExist(PictureLikes like)
+        public async Task<bool> IsLikeExist(DbConnection connection, PictureLikes like)
         {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QuerySingleAsync<bool>($"select iif(@{nameof(like.UserId)} = any (select [{nameof(PictureLikes.UserId)}] " +
-                    $"from [PictureLikes] where PictureId = @{nameof(like.PictureId)}),1,0)", like);
-            }
+            return await connection.QuerySingleAsync<bool>($"select iif(@{nameof(like.UserId)} = any (select [{nameof(PictureLikes.UserId)}] " +
+                $"from [PictureLikes] where PictureId = @{nameof(like.PictureId)}),1,0)", like); 
         }
 
-        public async Task<int> PicturesCountAsync(int userId)
+        public async Task<int> PicturesCountAsync(DbConnection connection, int userId)
         {
-            using (DbConnection connection = _factory.CreateConnection())
-            {
-                connection.ConnectionString = _connectionString;
-                await connection.OpenAsync();
-                return await connection.QueryFirstAsync<int>($"select count([{nameof(Picture.Id)}]) from [{nameof(Picture)}] " +
-                    $"where [{nameof(Picture.UserId)}] = @{nameof(userId)}",
-                    new { userId });
-            }
+            return await connection.QueryFirstAsync<int>($"select count([{nameof(Picture.Id)}]) from [{nameof(Picture)}] " +
+                $"where [{nameof(Picture.UserId)}] = @{nameof(userId)}",
+                new { userId });
         }
     }
 }

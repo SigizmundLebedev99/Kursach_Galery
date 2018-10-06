@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,6 +13,6 @@ namespace Galery.Server.Service.DTO.User
 
         public string Password { get; set; }
 
-        public string Avatar { get; set; }
+        public IFormFile Avatar { get; set; }
     }
 }

@@ -31,4 +31,6 @@
     <ProjectReference Include="..\Galery.Server.Service\Galery.Server.Service.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/pattern" /></VisualStudio></ProjectExtensions>
+
 </Project>

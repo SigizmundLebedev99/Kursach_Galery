@@ -70,7 +70,7 @@ namespace Galery.Server.Controllers
             return Ok(res);
         }
 
-        [HttpGet("top/{userId}")]
+        [HttpGet("top")]
         public async Task<IActionResult> GetTopPictures([FromQuery]int? skip, [FromQuery]int? take)
         {
             var res = await _service.GetTopPicturesAsync(skip, take);
@@ -84,14 +84,14 @@ namespace Galery.Server.Controllers
             return Ok();
         }
 
-        [HttpPost("relike/{userId}/{pictureId}")]
+        [HttpDelete("like/{userId}/{pictureId}")]
         public async Task<IActionResult> RemoveLikeAsync(int userId, int pictureId)
         {
             await _service.RemoveLikeAsync(userId, pictureId);
             return Ok();
         }
 
-        [HttpPost("tag/{tagId}")]
+        [HttpGet("tag/{tagId}")]
         public async Task<IActionResult> GetPictursByTag(int tagId, [FromQuery]int? skip, [FromQuery]int? take)
         {
             var res = await _service.GetPictursByTag(tagId, skip, take);
