@@ -81,5 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Galery.Server.Database.publish.xml" />
+    <None Include="Galery_1.Server.Database.publish.xml" />
   </ItemGroup>
 </Project>

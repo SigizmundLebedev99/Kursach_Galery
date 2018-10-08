@@ -24,50 +24,34 @@ namespace Galery.Server.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<User> CreateUser(CreateUserDTO model)
+        public async Task<IdentityResult> CreateUser(CreateUserDTO model)
         {
             try
             {
-                
                 var entity = _mapper.Map<User>(model);
-                if (model.Avatar != null)
-                {
-                    entity.Avatar = await _file.SaveAvatar(model.Avatar);
-                }
-                var res = await _userManager.CreateAsync(entity);
+                var res = await _userManager.CreateAsync(entity, model.Password);
                 if (!res.Succeeded)
                 {
-
+                    res = await _userManager.AddToRoleAsync(entity, "user");
                 }
-
-                return entity;
+                return res;
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+                throw new DatabaseException("Не удалось добавить данные", ex.Message);
             }
         }
 
-        public async Task<User> UpdateUser(int id, CreateUserDTO model)
+        public async Task<IdentityResult> UpdateUser(int id, CreateUserDTO model)
         {
             try
             {
                 var entity = _mapper.Map<User>(model);
-                if (model.Avatar != null)
-                {
-                    entity.Avatar = await _file.SaveAvatar(model.Avatar);
-                }
-                var res = await _userManager.CreateAsync(entity);
-                if (!res.Succeeded)
-                {
-
-                }
-
-                return entity;
+                return await _userManager.CreateAsync(entity);
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+                throw new DatabaseException("Не удалось обновить данные", ex.Message);
             }
         }
     }

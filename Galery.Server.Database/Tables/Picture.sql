@@ -4,7 +4,7 @@
 	[DateOfCreation] date not null,
     [Name] nvarchar(265) not null,
     [ImagePath] nvarchar(265) not null,
-    [UserId] int not null references [User](Id), 
+    [UserId] int null references [User](Id), 
     [Description] NVARCHAR(MAX) NULL
 )
 

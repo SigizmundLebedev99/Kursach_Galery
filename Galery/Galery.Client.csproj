@@ -107,5 +107,11 @@
     <Folder Include="Resources\images\" />
     <Folder Include="VM\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Galery.Common\Galery.Common.csproj">
+      <Project>{ba4f472a-04ae-4307-b8ed-d58fd766ca6d}</Project>
+      <Name>Galery.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

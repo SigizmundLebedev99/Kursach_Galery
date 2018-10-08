@@ -11,5 +11,6 @@ namespace Galery.Server.Service.Interfaces
         Task<string> SaveAvatar(IFormFile file);
         Task<string> SavePicture(IFormFile file);
         bool RemoveFile(string path);
+        bool IsExist(string path);
     }
 }

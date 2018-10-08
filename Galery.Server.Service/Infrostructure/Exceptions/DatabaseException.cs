@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Galery.Server.Service.Exceptions
 {
-    class DatabaseException : Exception
+    public class DatabaseException : Exception
     {
         public string InnerMessage { get; }
 

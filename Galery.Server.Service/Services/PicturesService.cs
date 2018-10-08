@@ -45,16 +45,17 @@ namespace Galery.Server.Services
             _file = file;
         }
 
-        public async Task<PictureInfoDTO> CreatePictureAsync(CreatePictureDTO model)
+        public async Task<OperationResult<PictureInfoDTO>> CreatePictureAsync(CreatePictureDTO model)
         {
             try
             {
-                var filePath = await _file.SavePicture(model.Image);
+                var operRes = new OperationResult<PictureInfoDTO>(true);
+                if (!_file.IsExist(model.ImagePath))
+                    operRes.AddErrorMessage("ImagePath", "Не удалось загрузить файл");
                 var user = await _userManager.FindByIdAsync(model.UserId.ToString());
                 if (user == null)
-                    throw new NotFoundException($"Не удалось найти пользователя с id = {model.UserId}");
+                    operRes.AddErrorMessage("UserId",$"Не удалось найти пользователя с id = {model.UserId}");
                 var entity = _mapper.Map<Picture>(model);
-                entity.ImagePath = filePath;
                 entity.DateOfCreation = DateTime.Now;
                 using (var connection = _factory.CreateConnection())
                 {
@@ -65,7 +66,8 @@ namespace Galery.Server.Services
                 var result = _mapper.Map<PictureInfoDTO>(entity);
                 result.Avatar = user.Avatar;
                 result.UserName = user.UserName;
-                return result;
+                operRes.Results.Add(result);
+                return operRes;
             }
             catch (NotFoundException)
             {
@@ -325,13 +327,6 @@ namespace Galery.Server.Services
                     var entity = _mapper.Map<Picture>(model);
                     entity.Id = id;
                     entity.DateOfCreation = pic.DateOfCreation;
-
-                    if (model.Image != null)
-                    {
-                        _file.RemoveFile(pic.ImagePath);
-                        entity.ImagePath = await _file.SavePicture(model.Image);
-                    }
-
                     await uow.Pictures.UpdateAsync(connection, entity, model.TagIds);
                     var result = _mapper.Map<PictureInfoDTO>(entity);
                     result.UserName = user.UserName;

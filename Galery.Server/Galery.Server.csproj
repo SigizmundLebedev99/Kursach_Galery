@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Galery.Common\Galery.Common.csproj" />
     <ProjectReference Include="..\Galery.Server.DAL\Galery.Server.DAL.csproj" />
     <ProjectReference Include="..\Galery.Server.Service\Galery.Server.Service.csproj" />
   </ItemGroup>

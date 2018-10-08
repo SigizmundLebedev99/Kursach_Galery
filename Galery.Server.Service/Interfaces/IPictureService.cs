@@ -11,7 +11,7 @@ namespace Galery.Server.Interfaces
 {
     public interface IPictureService
     {
-        Task<PictureInfoDTO> CreatePictureAsync(CreatePictureDTO model);
+        Task<OperationResult<PictureInfoDTO>> CreatePictureAsync(CreatePictureDTO model);
         Task<OperationResult<PictureInfoDTO>> UpdatePictureAsync(int id, CreatePictureDTO model);
         Task DeletePictureAsync(int id);
         Task<OperationResult<PictureFullInfoDTO>> GetPictureByIdAsync(int id, int userId);

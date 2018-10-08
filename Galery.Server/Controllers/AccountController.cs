@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Galery.Server.DAL.Models;
 using Galery.Server.DTO;
 using Galery.Server.DTO.User;
 using Galery.Server.JWT;
+using Galery.Server.Service.DTO.User;
+using Galery.Server.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -21,16 +24,17 @@ namespace Galery.Server.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
-
-        private readonly IConfiguration Configuration;
+        readonly UserManager<User> _userManager;
+        readonly IEmailService _email;
+        readonly IMapper _mapper;
 
         public AccountController(
             UserManager<User> userManager,
-            IConfiguration configuration)
+            IEmailService email, IMapper mapper)
         {
+            _email = email;
             _userManager = userManager;
-            Configuration = configuration;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace Galery.Server.Controllers
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var user = await _userManager.FindByNameAsync(model.Name);
                 if (user != null)
                 {
                     if (await _userManager.CheckPasswordAsync(user, model.Password))
@@ -81,13 +85,56 @@ namespace Galery.Server.Controllers
                     return BadRequest(ModelState);
                 }
 
-                ModelState.AddModelError("Email", $"Пользователя с email {model.Email} не существует");
+                ModelState.AddModelError("Email", $"Пользователя с email {model.Name} не существует");
                 return BadRequest(ModelState);
             }
             catch (Exception ex)
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Create new user
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserDTO model)
+        {
+            var user = _mapper.Map<User>(model);
+            user.DateOfCreation = DateTime.Now;
+            var res = await _userManager.CreateAsync(user, model.Password);
+            if (res.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var callbackUrl = Url.Action(
+                    "ConfirmEmail",
+                    "Account",
+                    new { userId = user.Id, code },
+                    protocol: HttpContext.Request.Scheme);
+                await _email.SendEmailAsync(model.Email, "Confirm your account",
+                    $"Подтвердите регистрацию, перейдя по ссылке: <a href='{callbackUrl}'>link</a>");
+
+                return Ok();
+            }
+            return BadRequest(res);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return View("ConfirmationError");
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return View("ConfirmationError");
+            }
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+                return View("ConfirmEmail", user);
+            return View("Error");
         }
     }
 }

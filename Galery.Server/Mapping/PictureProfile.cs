@@ -14,11 +14,11 @@ namespace Galery.Server.Mapping
     {
         public PictureProfile()
         {
-            CreateMap<CreatePictureDTO, Picture>().ForMember(e => e.ImagePath, c => c.Ignore());
+            CreateMap<CreatePictureDTO, Picture>();
             CreateMap<Picture, PictureInfoDTO>();
             CreateMap<CreateCommentDTO, Comment>();
             CreateMap<Comment, CommentInfoDTO>();
-            CreateMap<CreateUserDTO, User>().ForMember(e => e.Avatar, c => c.Ignore());
+            CreateMap<CreateUserDTO, User>();
         }
     }
 }

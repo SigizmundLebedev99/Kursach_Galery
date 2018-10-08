@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Galery.Server.DAL;
 using Galery.Server.DAL.Identity;
 using Galery.Server.DAL.Models;
 using Galery.Server.Interfaces;
 using Galery.Server.JWT;
 using Galery.Server.Mapping;
+using Galery.Server.Middleware;
 using Galery.Server.Service.Interfaces;
 using Galery.Server.Service.Services;
 using Galery.Server.Services;
@@ -21,8 +19,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -57,7 +53,7 @@ namespace Galery.Server
 
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "AkBars API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "Galery API", Version = "v1" });
 
                 var basePath = AppContext.BaseDirectory;
                 //var xmlPath = Path.Combine(basePath, "Galery.Server.xml");
@@ -84,13 +80,14 @@ namespace Galery.Server
             services.AddTransient<IUserStore<User>, UserStore>();
             services.AddTransient<IRoleStore<Role>, RoleStore>();           
             services.AddSingleton<DbProviderFactory>(SqlClientFactory.Instance);
-            services.AddIdentity<User, Role>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<User, Role>().AddDefaultTokenProviders();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPictureService, PicturesService>();
             services.AddTransient<IFileWorkService, FileWorkService>();
             services.AddTransient<ITagService, TagService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IEmailService, EmailService>();
             services.AddMvc();
         }
 
@@ -109,6 +106,8 @@ namespace Galery.Server
 
                 c.DocExpansion(DocExpansion.None);
             });
+
+            app.UseMiddleware(typeof(ErrorHandlerMiddleware));
 
             app.UseMvc(routes =>
             {

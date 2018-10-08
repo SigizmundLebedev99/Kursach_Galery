@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-using System.Text;
-
-namespace Galery.Server.DAL.Models
+﻿namespace Galery.Server.DAL.Models
 {
     public class User : BaseEntity
     {

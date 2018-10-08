@@ -40,6 +40,11 @@ namespace Galery.Server.Service.Services
             }
         }
 
+        public bool IsExist(string path)
+        {
+            return File.Exists(_hosting.WebRootPath + path);
+        }
+
         public Task<string> SaveAvatar(IFormFile file)
         {
             return Task.Run(() =>
@@ -106,7 +111,7 @@ namespace Galery.Server.Service.Services
                 string hash = GetHashFromFile(image.SavePixelData());
 
 
-                string dir1 = _hosting.WebRootPath + "/Files/Avatars/" + hash.Substring(0, 2);
+                string dir1 = _hosting.WebRootPath + "/Files/Pictures/" + hash.Substring(0, 2);
                 string dir2 = $"{dir1}/{hash.Substring(2, 2)}/";
 
 

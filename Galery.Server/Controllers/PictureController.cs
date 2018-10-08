@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Galery.Server.DAL.Models;
 using Galery.Server.Interfaces;
 using Galery.Server.Service.DTO.PictureDTO;
 using Galery.Server.Service.Infrostructure;
@@ -11,7 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Galery.Server.Controllers
 {
-    [Route("picture")]
+    [Produces("application/json")]
+    [Route("api/picture")]
     public class PictureController : Controller
     {
         readonly IPictureService _service;
@@ -21,20 +23,31 @@ namespace Galery.Server.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Create new picture
+        /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreatePicture([FromForm]CreatePictureDTO model)
+        [ProducesResponseType(typeof(PictureInfoDTO), 200)]
+        public async Task<IActionResult> CreatePicture([FromBody]CreatePictureDTO model)
         {
             var result = await _service.CreatePictureAsync(model);
-            return Ok(result);
+            return GetResult(result, true);
         }
 
+        /// <summary>
+        /// Update picture info
+        /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePicture(int id, [FromForm]CreatePictureDTO model)
+        [ProducesResponseType(typeof(PictureInfoDTO), 200)]
+        public async Task<IActionResult> UpdatePicture(int id, [FromBody]CreatePictureDTO model)
         {
             var result = await _service.UpdatePictureAsync(id, model);
             return GetResult(result, true);
         }
 
+        /// <summary>
+        /// Delete picture
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePicture(int id)
         {
@@ -42,41 +55,64 @@ namespace Galery.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get full info about picture by id for authentificated user
+        /// </summary>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureById(int id, [FromHeader]int userId)
         {
             var res = await _service.GetPictureByIdAsync(id, userId);
             return GetResult(res, true);
         }
 
+        /// <summary>
+        /// Get full info about picture by id for anon
+        /// </summary>
         [HttpGet("anon/{id}")]
+        [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureByIdAnonimous(int id)
         {
             var res = await _service.GetPictureByIdAnonimousAsync(id);
             return Ok(res);
         }
 
+        /// <summary>
+        /// Get user's liked pictures
+        /// </summary>
         [HttpGet("liked/{userId}")]
-        public async Task<IActionResult> GetLikedByUser(int userId, [FromQuery]int? skip, [FromQuery]int? take)
+        [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
+        public async Task<IActionResult> GetLikedByUser(int userId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
         {
             var res = await _service.GetLikedByUserAsync(userId, skip, take);
             return Ok(res);
         }
 
+        /// <summary>
+        /// Get user's pictures
+        /// </summary>
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUser(int userId, [FromQuery]int? skip, [FromQuery]int? take)
+        [ProducesResponseType(typeof(IEnumerable<Picture>), 200)]
+        public async Task<IActionResult> GetByUser(int userId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
         {
             var res = await _service.GetByUserAsync(userId, skip, take);
             return Ok(res);
         }
 
+        /// <summary>
+        /// Get pictures with top likes count
+        /// </summary>
         [HttpGet("top")]
-        public async Task<IActionResult> GetTopPictures([FromQuery]int? skip, [FromQuery]int? take)
+        [ProducesResponseType(typeof(IEnumerable<PictureInfoWithFeedbackDTO>), 200)]
+        public async Task<IActionResult> GetTopPictures([FromQuery]int? skip = 0, [FromQuery]int? take = 50)
         {
             var res = await _service.GetTopPicturesAsync(skip, take);
             return Ok(res);
         }
 
+        /// <summary>
+        /// Create like by user to picture
+        /// </summary>
         [HttpPost("like/{userId}/{pictureId}")]
         public async Task<IActionResult> SetLike(int userId, int pictureId)
         {
@@ -84,6 +120,9 @@ namespace Galery.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Delete like by user to picture
+        /// </summary>
         [HttpDelete("like/{userId}/{pictureId}")]
         public async Task<IActionResult> RemoveLikeAsync(int userId, int pictureId)
         {
@@ -91,8 +130,12 @@ namespace Galery.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Get pictures by tag
+        /// </summary>
         [HttpGet("tag/{tagId}")]
-        public async Task<IActionResult> GetPictursByTag(int tagId, [FromQuery]int? skip, [FromQuery]int? take)
+        [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
+        public async Task<IActionResult> GetPictursByTag(int tagId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
         {
             var res = await _service.GetPictursByTag(tagId, skip, take);
             return Ok(res);

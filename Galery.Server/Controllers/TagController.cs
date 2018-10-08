@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Galery.Server.Controllers
 {
-    [Route("tag")]
+    [Route("api/tag")]
     public class TagController : Controller
     {
         readonly ITagService _service;
