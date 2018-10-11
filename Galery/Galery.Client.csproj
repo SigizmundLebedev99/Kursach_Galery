@@ -34,6 +34,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\10.0.1\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net" />
@@ -72,6 +76,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="VM\BaseVM.cs" />
+    <Compile Include="VM\DelegateCommand.cs" />
+    <Compile Include="VM\MainVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,6 +93,7 @@
     <Compile Include="ClientLogic\Concreate\LoadClient.cs" />
     <Compile Include="ClientLogic\Concreate\PictureClient.cs" />
     <Compile Include="ClientLogic\Concreate\SubscribeClient.cs" />
+    <Compile Include="ClientLogic\Concreate\TagClient.cs" />
     <Compile Include="ClientLogic\IClientService.cs" />
     <Compile Include="ClientLogic\IAccountClient.cs" />
     <Compile Include="ClientLogic\ICommentClient.cs" />
@@ -158,7 +166,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\images\" />
-    <Folder Include="VM\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Galery.Common\Galery.Common.csproj">

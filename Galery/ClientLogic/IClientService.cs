@@ -1,4 +1,6 @@
-﻿namespace Galery.ClientLogic
+﻿using Galery.Server.DTO;
+
+namespace Galery.ClientLogic
 {
     interface IClientService
     {
@@ -8,5 +10,7 @@
         ICommentClient Comment { get; set; }
         ISubscribeClient Subscribe { get; set; }
         ITagClient Tag { get; set; }
+
+        void SetAutenticationHeader(TokenResponse token);
     }
 }

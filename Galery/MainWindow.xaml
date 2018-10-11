@@ -4,9 +4,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Galery"
+        xmlns:vm="clr-namespace:Galery.VM"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <TabControl>
-        
-    </TabControl>
+        Title="MainWindow" Height="400" Width="400" Background="Black">
+    <Window.DataContext>
+        <vm:MainVM/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="60"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Margin="5" Command="{Binding Send}"/>
+        <TextBox Grid.Column="1" Text="{Binding Path}" Margin="5"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Margin="5" Text="{Binding Result}"/>
+    </Grid>
 </Window>

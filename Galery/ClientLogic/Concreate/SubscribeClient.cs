@@ -32,22 +32,22 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> GetSubscribers(int userId)
         {
-            throw new NotImplementedException();
+            return _client.GetAsync(_hostAdress + $"/api/Subscribe/to/{userId}");
         }
 
         public Task<HttpResponseMessage> GetSubscribes(int userId)
         {
-            throw new NotImplementedException();
+            return _client.GetAsync(_hostAdress + $"/api/Subscribe/from/{userId}");
         }
 
         public Task<HttpResponseMessage> GetUserInfo(int userId)
         {
-            throw new NotImplementedException();
+            return _client.GetAsync(_hostAdress + $"/api/Subscribe/userinfo/{userId}");
         }
 
         public Task<HttpResponseMessage> Subscribing(Subscribe model)
         {
-            throw new NotImplementedException();
+            return _client.PostAsJsonAsync(_hostAdress + $"/api/Subscribe", model);
         }
     }
 }
