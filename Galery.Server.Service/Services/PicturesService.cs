@@ -2,7 +2,6 @@
 using Dapper;
 using Galery.Server.DAL;
 using Galery.Server.DAL.Models;
-using Galery.Server.DAL.Repository;
 using Galery.Server.Interfaces;
 using Galery.Server.Service.DTO.CommentDTO;
 using Galery.Server.Service.DTO.PictureDTO;
@@ -15,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 using static Galery.Server.DAL.Helpers.QueryBuilder;
 
@@ -44,6 +42,12 @@ namespace Galery.Server.Services
             _mapper = mapper;
             _file = file;
         }
+        
+        private Task Connect(DbConnection connection)
+        {
+            connection.ConnectionString = _connectionString;
+            return connection.OpenAsync();
+        }
 
         public async Task<OperationResult<PictureInfoDTO>> CreatePictureAsync(CreatePictureDTO model)
         {
@@ -59,8 +63,7 @@ namespace Galery.Server.Services
                 entity.DateOfCreation = DateTime.Now;
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     entity = await uow.Pictures.CreateAsync(connection, entity, model.TagIds);
                 }
                 var result = _mapper.Map<PictureInfoDTO>(entity);
@@ -85,8 +88,7 @@ namespace Galery.Server.Services
             {
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     var entity = uow.Pictures.FindByIdAsync(connection, id);
                     if (entity == null)
                         throw new NotFoundException($"Не удалось найти картину с id = {id}");
@@ -103,7 +105,7 @@ namespace Galery.Server.Services
             }
         }
 
-        public async Task<IEnumerable<Picture>> GetByUserAsync(int userId, int? skip, int? take)
+        public async Task<IEnumerable<Picture>> GetByUserAsync(int userId, int skip, int take)
         {
             try
             {
@@ -112,8 +114,7 @@ namespace Galery.Server.Services
                     throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     return await uow.Pictures.GetByAuthorAsync(connection, userId, skip, take);
                 }
             }
@@ -123,11 +124,11 @@ namespace Galery.Server.Services
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
             }
         }
 
-        public async Task<IEnumerable<PictureInfoDTO>> GetLikedByUserAsync(int userId, int? skip, int? take)
+        public async Task<IEnumerable<PictureInfoDTO>> GetLikedByUserAsync(int userId, int skip, int take)
         {
             try
             {
@@ -136,8 +137,7 @@ namespace Galery.Server.Services
                     throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     return await connection.QueryAsync<PictureInfoDTO>("GetLikedByUser", new { userId, skip, take}, null,null, CommandType.StoredProcedure);
                 }
             }
@@ -151,14 +151,45 @@ namespace Galery.Server.Services
             }
         }
 
+        public async Task<IEnumerable<PictureInfoDTO>> GetNewPicturesAsync(int skip, int take)
+        {
+            try
+            {
+                using (var connection = _factory.CreateConnection())
+                {
+                    await Connect(connection);
+                    return await connection.QueryAsync<PictureInfoDTO>("GetNewPictures", new { skip, take }, null, null, CommandType.StoredProcedure);
+                }
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
+        }
+
+        public async Task<IEnumerable<PictureInfoDTO>> GetPicsFromSubscribes(int userId, int skip, int take)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
+            using (var connection = _factory.CreateConnection())
+            {
+                await Connect(connection);
+                return await connection.QueryAsync<PictureInfoDTO>("GetPicsFromSubscribes", new { userId, skip, take}, null, null, CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<PictureFullInfoDTO> GetPictureByIdAnonimousAsync(int id)
         {
             try
             {
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     var pic = await uow.Pictures.FindByIdAsync(connection, id);
                     if (pic == null)
                         throw new NotFoundException($"Не удалось найти картину с id = {id}");
@@ -189,8 +220,7 @@ namespace Galery.Server.Services
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {userId}");
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     var pic = await uow.Pictures.FindByIdAsync(connection, id);
                     if (pic == null)
                         operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");
@@ -213,14 +243,13 @@ namespace Galery.Server.Services
             }
         }
 
-        public async Task<IEnumerable<PictureInfoDTO>> GetPictursByTag(int tagId, int? skip, int? take)
+        public async Task<IEnumerable<PictureInfoDTO>> GetPicturesByTagAsync(int tagId, int skip, int take)
         {
             try
             {
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     return await connection.QueryAsync<PictureInfoDTO>("GetPicturesByTag", new { tagId, skip, take }, null, null, CommandType.StoredProcedure);
                 }
             }
@@ -234,14 +263,13 @@ namespace Galery.Server.Services
             }
         }
 
-        public async Task<IEnumerable<PictureInfoWithFeedbackDTO>> GetTopPicturesAsync(int? skip, int? take)
+        public async Task<IEnumerable<PictureInfoWithFeedbackDTO>> GetTopPicturesAsync(int skip, int take)
         {
             try
             {
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     return await connection.QueryAsync<PictureInfoWithFeedbackDTO>("GetTopPicturesInfo", new { skip, take }, null, null, CommandType.StoredProcedure);
                 }
             }
@@ -258,8 +286,7 @@ namespace Galery.Server.Services
                 var like = new PictureLikes { PictureId = pictureId, UserId = userId };
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     if (await uow.Pictures.IsLikeExist(connection, like))
                     {
                         await connection.ExecuteAsync($"DELETE FROM {nameof(PictureLikes)} " +
@@ -285,8 +312,7 @@ namespace Galery.Server.Services
             {
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     var like = new PictureLikes { PictureId = pictureId, UserId = userId };
                     if (!await uow.Pictures.IsLikeExist(connection, like))
                         await uow.Pictures.PushLike(connection, like);
@@ -314,8 +340,7 @@ namespace Galery.Server.Services
                     operRes.AddErrorMessage("userId", $"Не удалось найти пользователя с id = {model.UserId}");
                 using (var connection = _factory.CreateConnection())
                 {
-                    connection.ConnectionString = _connectionString;
-                    await connection.OpenAsync();
+                    await Connect(connection);
                     var pic = await uow.Pictures.FindByIdAsync(connection, id);
                     if (pic == null)
                         operRes.AddErrorMessage("id", $"Не удалось найти картину с id = {id}");

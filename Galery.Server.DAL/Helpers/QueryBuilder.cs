@@ -106,11 +106,9 @@ namespace Galery.Server.DAL.Helpers
             var sb = new StringBuilder();
             sb.Append($"ORDER BY [{PropertyName(orderByProp)}]");
 
-            if(skip != null && skip.Value > 0)
-            {
-                sb.Append($" OFFSET {skip.Value} ROWS ");
-            }
-            if(take!= null && take.Value > 0)
+            sb.Append($" OFFSET {(skip == null? 0 : skip.Value)} ROWS ");
+            
+            if(take!= null && take.Value >= 0)
             {
                 sb.Append($"FETCH NEXT {take.Value} ROWS ONLY");
             }

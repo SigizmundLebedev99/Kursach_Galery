@@ -71,6 +71,12 @@
     <Build Include="Procedure\GetTagsWithPicCount.sql" />
     <Build Include="Procedure\GetPicByIdAnonimous.sql" />
     <Build Include="Procedure\GetPicturesByTag.sql" />
+    <Build Include="Procedure\GetNewPictures.sql" />
+    <Build Include="Tables\Subscribe.sql" />
+    <Build Include="Procedure\GetSubscribesForUser.sql" />
+    <Build Include="Procedure\GetPicsFromSubscribes.sql" />
+    <Build Include="Procedure\GetUserInfo.sql" />
+    <Build Include="Procedure\GetSubscribersForUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />

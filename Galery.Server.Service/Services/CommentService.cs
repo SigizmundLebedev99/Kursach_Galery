@@ -6,10 +6,9 @@ using Galery.Server.Service.Exceptions;
 using Galery.Server.Service.Infrostructure;
 using Galery.Server.Service.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Galery.Server.Service.Services
@@ -25,11 +24,12 @@ namespace Galery.Server.Service.Services
         public CommentService(IUnitOfWork uow,
         UserManager<User> userManager,
         IMapper mapper,
-        DbProviderFactory factory)
+        DbProviderFactory factory, IConfiguration config)
         {
+            this.uow = uow;
             _userManager = userManager;
             _mapper = mapper;
-            _connectionString = "";
+            _connectionString = config.GetConnectionString("DefaultConnection");
             _factory = factory;
         }
 

@@ -5,8 +5,6 @@ using Galery.Server.Service.Exceptions;
 using Galery.Server.Service.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Galery.Server.Service.Services
@@ -44,15 +42,16 @@ namespace Galery.Server.Service.Services
 
         public async Task<IdentityResult> UpdateUser(int id, CreateUserDTO model)
         {
-            try
-            {
-                var entity = _mapper.Map<User>(model);
-                return await _userManager.CreateAsync(entity);
-            }
-            catch (Exception ex)
-            {
-                throw new DatabaseException("Не удалось обновить данные", ex.Message);
-            }
+            throw new NotImplementedException();
+            //try
+            //{
+            //    var entity = _mapper.Map<User>(model);
+            //    return await _userManager.CreateAsync(entity);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new DatabaseException("Не удалось обновить данные", ex.Message);
+            //}
         }
     }
 }

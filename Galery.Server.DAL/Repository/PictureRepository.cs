@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Galery.Server.DAL.Helpers.QueryBuilder;
@@ -21,15 +22,17 @@ namespace Galery.Server.DAL.Repository
                 transaction = connection.BeginTransaction();                   
                 entity.Id = await connection.QuerySingleAsync<int>(CreateQuery(entity), entity, transaction);
 
-                var sb = new StringBuilder();
-                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
-                    $"[{nameof(PictureTag.TagId)}]) values ");
-                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
+                if (tagIds != null && tagIds.Count() > 0)
+                {
+                    var sb = new StringBuilder();
+                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                        $"[{nameof(PictureTag.TagId)}]) values ");
+                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
 
-                sb.Remove(sb.Length - 1, 1);
+                    sb.Remove(sb.Length - 1, 1);
 
-                await connection.ExecuteAsync(sb.ToString(),null, transaction);
-
+                    await connection.ExecuteAsync(sb.ToString(), null, transaction);
+                }
                 transaction.Commit();
             }
             catch(Exception ex)
@@ -57,15 +60,16 @@ namespace Galery.Server.DAL.Repository
             try
             {
                 transaction = connection.BeginTransaction();
-                entity.Id = await connection.QuerySingleAsync<int>(UpdateQuery(entity), entity, transaction);
+                await connection.ExecuteAsync(UpdateQuery(entity), entity, transaction);
                 var sb = new StringBuilder();
-                sb.Append($"delete from [{nameof(PictureTag)}] where [{nameof(PictureTag.PictureId)}] = {entity.Id}");
-                sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
-                    $"[{nameof(PictureTag.TagId)}]) values ");
-                foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
-
+                sb.Append($"delete from [{nameof(PictureTag)}] where [{nameof(PictureTag.PictureId)}] = {entity.Id};");
+                if (tagIds != null && tagIds.Count() > 0)
+                {
+                    sb.Append($"insert into [{nameof(PictureTag)}]([{nameof(PictureTag.PictureId)}], " +
+                        $"[{nameof(PictureTag.TagId)}]) values ");
+                    foreach (var id in tagIds) sb.Append($"({entity.Id}, {id}),");
                 sb.Remove(sb.Length - 1, 1);
-
+                }
                 await connection.ExecuteAsync(sb.ToString(), null, transaction);
 
                 transaction.Commit();

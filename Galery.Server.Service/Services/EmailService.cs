@@ -1,13 +1,8 @@
 ﻿using Galery.Server.Service.Interfaces;
-using Microsoft.AspNetCore.Hosting;
-using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Configuration;
+using MimeKit;
+using System.Threading.Tasks;
 
 namespace Galery.Server.Service.Services
 {

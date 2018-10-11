@@ -82,7 +82,7 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("liked/{userId}")]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
-        public async Task<IActionResult> GetLikedByUser(int userId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
+        public async Task<IActionResult> GetLikedByUser(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
             var res = await _service.GetLikedByUserAsync(userId, skip, take);
             return Ok(res);
@@ -93,7 +93,7 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("user/{userId}")]
         [ProducesResponseType(typeof(IEnumerable<Picture>), 200)]
-        public async Task<IActionResult> GetByUser(int userId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
+        public async Task<IActionResult> GetByUser(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
             var res = await _service.GetByUserAsync(userId, skip, take);
             return Ok(res);
@@ -104,7 +104,7 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("top")]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoWithFeedbackDTO>), 200)]
-        public async Task<IActionResult> GetTopPictures([FromQuery]int? skip = 0, [FromQuery]int? take = 50)
+        public async Task<IActionResult> GetTopPictures([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
             var res = await _service.GetTopPicturesAsync(skip, take);
             return Ok(res);
@@ -135,9 +135,17 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("tag/{tagId}")]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
-        public async Task<IActionResult> GetPictursByTag(int tagId, [FromQuery]int? skip = 0, [FromQuery]int? take = 50)
+        public async Task<IActionResult> GetPicturesByTag(int tagId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
-            var res = await _service.GetPictursByTag(tagId, skip, take);
+            var res = await _service.GetPicturesByTagAsync(tagId, skip, take);
+            return Ok(res);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
+        public async Task<IActionResult> GetNewPictures([FromQuery]int skip = 0, [FromQuery]int take = 50)
+        {
+            var res = await _service.GetNewPicturesAsync(skip, take);
             return Ok(res);
         }
 

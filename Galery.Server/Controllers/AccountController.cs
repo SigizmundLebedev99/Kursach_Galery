@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Galery.Server.DAL.Models;
@@ -75,6 +73,7 @@ namespace Galery.Server.Controllers
                             Access_token = encodedJwt,
                             Username = user.UserName,
                             UserId = user.Id,
+                            Avatar = user.Avatar,
                             Roles = roles,
                             Start = now,
                             Finish = now.Add(TimeSpan.FromMinutes(AuthTokenOptions.LIFETIME))
@@ -98,7 +97,7 @@ namespace Galery.Server.Controllers
         /// Create new user
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserDTO model)
+        public async Task<IActionResult> CreateUser([FromBody]CreateUserDTO model)
         {
             var user = _mapper.Map<User>(model);
             user.DateOfCreation = DateTime.Now;

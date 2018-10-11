@@ -13,6 +13,8 @@ namespace Galery.Server.DTO
 
         public int UserId { get; set; }
 
+        public string Avatar { get; set; }
+
         public IList<string> Roles { get; set; }
 
         public DateTime Start { get; set; }
