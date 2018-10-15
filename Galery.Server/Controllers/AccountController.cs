@@ -42,7 +42,7 @@ namespace Galery.Server.Controllers
         /// <returns></returns>
         [HttpPost("token")]
         [ProducesResponseType(typeof(TokenResponse), 200)]
-        public async Task<IActionResult> Token(LoginDTO model)
+        public async Task<IActionResult> Token([FromBody]LoginDTO model)
         {
             try
             {

@@ -6,7 +6,7 @@ namespace Galery.ClientLogic
 {
     interface ILoadClient
     {
-        Task<HttpResponseMessage> LoadImage(byte[] file);
-        Task<HttpResponseMessage> LoadAvatar(byte[] file);
+        Task<HttpResponseMessage> LoadImage(byte[] file, string name);
+        Task<HttpResponseMessage> LoadAvatar(byte[] file, string name);
     }
 }

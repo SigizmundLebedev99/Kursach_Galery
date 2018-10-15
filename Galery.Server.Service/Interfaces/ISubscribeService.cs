@@ -13,5 +13,6 @@ namespace Galery.Server.Service.Interfaces
         Task Desubscribing(int fromId, int toId);
         Task<IEnumerable<UserDTO>> GetSubscribes(int userId);
         Task<IEnumerable<UserDTO>> GetSubscribers(int userId);
+        Task<IEnumerable<UserDTO>> UserSearch(string name);
     }
 }

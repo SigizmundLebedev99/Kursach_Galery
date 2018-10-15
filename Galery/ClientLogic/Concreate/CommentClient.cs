@@ -21,12 +21,12 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> CreateComment(CreateCommentDTO model)
         {
-            return _client.PostAsJsonAsync(_hostAdress + "/api/Comment", model);
+            return _client.PostAsJsonAsync("/api/Comment", model);
         }
 
         public Task<HttpResponseMessage> DeleteComment(int id)
         {
-            return _client.DeleteAsync(_hostAdress + $"/api/Comment/{id}");
+            return _client.DeleteAsync($"/api/Comment/{id}");
         }
     }
 }

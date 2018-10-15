@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Galery.Server.DTO;
@@ -15,6 +16,9 @@ namespace Galery.ClientLogic.Concreate
         public ClientService(string hostAdress)
         {
             _httpClient = new HttpClient();
+            _httpClient.BaseAddress = new Uri(hostAdress);
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             Account = new AccountClient(hostAdress, _httpClient);
             Load = new LoadClient(hostAdress, _httpClient);
             Picture = new PictureClient(hostAdress, _httpClient);
@@ -32,7 +36,7 @@ namespace Galery.ClientLogic.Concreate
 
         public void SetAutenticationHeader(TokenResponse token)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

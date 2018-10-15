@@ -109,6 +109,8 @@ namespace Galery.Server
                 c.DocExpansion(DocExpansion.None);
             });
 
+            app.UseStaticFiles();
+
             app.UseMiddleware(typeof(ErrorHandlerMiddleware));
 
             app.UseMvc(routes =>

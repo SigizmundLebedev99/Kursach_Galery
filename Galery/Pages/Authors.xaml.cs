@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Galery.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для PictureInfo.xaml
+    /// Логика взаимодействия для Authors.xaml
     /// </summary>
-    public partial class PictureInfo : Page
+    public partial class Authors : UserControl
     {
-        public PictureInfo()
+        public Authors()
         {
             InitializeComponent();
         }

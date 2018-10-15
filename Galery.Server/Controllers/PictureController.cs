@@ -148,6 +148,14 @@ namespace Galery.Server.Controllers
             var res = await _service.GetNewPicturesAsync(skip, take);
             return Ok(res);
         }
+        
+        [HttpGet("fromSubscribes/{userId}")]
+        [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
+        public async Task<IActionResult> GetNewPicturesFromSubscribes(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
+        {
+            var res = await _service.GetPicsFromSubscribes(userId, skip, take);
+            return Ok(res);
+        }
 
 
         private ActionResult GetResult<T>(OperationResult<T> operRes, bool isSingle)

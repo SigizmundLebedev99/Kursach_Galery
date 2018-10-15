@@ -20,22 +20,22 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> CreateTag(string name)
         {
-            return _client.PostAsJsonAsync(_hostAdress + "/api/tag", name);
+            return _client.PostAsJsonAsync("/api/tag", name);
         }
 
         public Task<HttpResponseMessage> DeleteTag(int id)
         {
-            return _client.DeleteAsync(_hostAdress + $"/api/tag/{id}");
+            return _client.DeleteAsync($"/api/tag/{id}");
         }
 
         public Task<HttpResponseMessage> GetAllTags()
         {
-            return _client.GetAsync(_hostAdress + $"/api/tag");
+            return _client.GetAsync($"/api/tag");
         }
 
         public Task<HttpResponseMessage> UpdateTag(int id, string name)
         {
-            return _client.PutAsJsonAsync(_hostAdress + $"/api/tag/{id}", name);
+            return _client.PutAsJsonAsync($"/api/tag/{id}", name);
         }
     }
 }

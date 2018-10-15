@@ -24,7 +24,7 @@ namespace Galery.ClientLogic.Concreate
             {
                 Content = new StringContent("", Encoding.UTF8, JsonConvert.SerializeObject(model)),
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri(_hostAdress + "/api/Subscribe")
+                RequestUri = new Uri("/api/Subscribe")
             };
 
             return _client.SendAsync(mess);
@@ -32,22 +32,22 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> GetSubscribers(int userId)
         {
-            return _client.GetAsync(_hostAdress + $"/api/Subscribe/to/{userId}");
+            return _client.GetAsync($"/api/Subscribe/to/{userId}");
         }
 
         public Task<HttpResponseMessage> GetSubscribes(int userId)
         {
-            return _client.GetAsync(_hostAdress + $"/api/Subscribe/from/{userId}");
+            return _client.GetAsync($"/api/Subscribe/from/{userId}");
         }
 
         public Task<HttpResponseMessage> GetUserInfo(int userId)
         {
-            return _client.GetAsync(_hostAdress + $"/api/Subscribe/userinfo/{userId}");
+            return _client.GetAsync($"/api/Subscribe/userinfo/{userId}");
         }
 
         public Task<HttpResponseMessage> Subscribing(Subscribe model)
         {
-            return _client.PostAsJsonAsync(_hostAdress + $"/api/Subscribe", model);
+            return _client.PostAsJsonAsync($"/api/Subscribe", model);
         }
     }
 }

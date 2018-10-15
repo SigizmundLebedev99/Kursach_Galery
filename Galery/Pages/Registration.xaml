@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="Galery.Pages.Registration"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" d:DesignWidth="450" Height="Auto">
+    <StackPanel>
+        <materialDesign:ColorZone Mode="PrimaryMid" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}" IsCancel="True"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                    <materialDesign:PackIcon Kind="ArrowLeft" Height="25" Width="25"/>
+                </Button>
+            </StackPanel>
+        </materialDesign:ColorZone>
+        <StackPanel Margin="20">
+            <TextBox
+                materialDesign:HintAssist.Hint="{Binding LoginMessage}"
+                materialDesign:HintAssist.IsFloating="True"
+                Margin="0 12 0 0"
+                Width="200" HorizontalAlignment="Center" Text="{Binding Login}"/>
+            <TextBox
+                materialDesign:HintAssist.Hint="{Binding Email}"
+                materialDesign:HintAssist.IsFloating="True"
+                Margin="0 12 0 0"
+                Width="200" HorizontalAlignment="Center" Text="{Binding EmailMessage}"/>
+            <PasswordBox x:Name="Password"
+                Grid.Row="1"
+                materialDesign:HintAssist.Hint="{Binding PasswordMessage}"
+                materialDesign:HintAssist.IsFloating="True"
+                Margin="0 12 0 0"
+                Width="200" HorizontalAlignment="Center"/>
+            <PasswordBox x:Name="Confirm"
+                Grid.Row="1"
+                materialDesign:HintAssist.Hint="{Binding ConfirmPasswordMessage}"
+                materialDesign:HintAssist.IsFloating="True"
+                Margin="0 12 0 0"
+                Width="200" HorizontalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <ContentControl Content="{Binding Content}" MinHeight="50" MinWidth="50" Margin="6" />
+                <Button Command="{Binding ChooseAvatar}"
+                Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}"
+                ToolTip="MaterialDesignFloatingActionMiniLightButton">
+                    <materialDesign:PackIcon
+                    Kind="FileImage"
+                    Height="24"
+                    Width="24" />
+                </Button>
+            </StackPanel>
+            <Button HorizontalAlignment="Center" Margin="20" materialDesign:ShadowAssist.ShadowDepth="Depth3">
+                Регистрация
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

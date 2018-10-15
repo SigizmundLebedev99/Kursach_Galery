@@ -5,22 +5,164 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Galery"
         xmlns:vm="clr-namespace:Galery.VM"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="400" Width="400" Background="Black">
+        xmlns:pages="clr-namespace:Galery.Pages"
+        Title="MainWindow" Height="720" Width="1024">
     <Window.DataContext>
         <vm:MainVM/>
     </Window.DataContext>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="60"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Button Margin="5" Command="{Binding Send}"/>
-        <TextBox Grid.Column="1" Text="{Binding Path}" Margin="5"/>
-        <TextBox Grid.Column="1" Grid.Row="1" Margin="5" Text="{Binding Result}"/>
-    </Grid>
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <DockPanel MinWidth="264">
+                    <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" 
+                                        DockPanel.Dock="Top"
+                                        HorizontalAlignment="Right" Margin="15"
+                                        IsChecked="{Binding ElementName=MenuToggleButton, Path=IsChecked, Mode=TwoWay}" />
+                    <materialDesign:Flipper DockPanel.Dock="Top" HorizontalAlignment="Center" IsFlipped="{Binding LoginFlip}" FontFamily="Segoe UI Semibold">
+                        <materialDesign:Flipper.FrontContent>
+                            <Grid Height="256" Width="256">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="200" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <materialDesign:ColorZone
+                                        Mode="PrimaryLight"
+                                        VerticalAlignment="Stretch">
+                                    <ContentControl Content="{Binding CurrentUser.Content}"/>    
+                                </materialDesign:ColorZone>
+                                <StackPanel
+                                        Grid.Row="1"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CurrentUser.Name}" HorizontalAlignment="Center" FontSize="14"/>
+                                    <Button
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                                        Margin="0 4 0 0">
+                                        Войти как
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </materialDesign:Flipper.FrontContent>
+                        <materialDesign:Flipper.BackContent>
+                            <Grid Height="256" Width="256" DataContext="{Binding LoginVM}">              
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <materialDesign:ColorZone
+                                        Mode="PrimaryMid"
+                                        Padding="6">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button
+                                            Style="{StaticResource MaterialDesignToolForegroundButton}"
+                                            Command="{x:Static materialDesign:Flipper.FlipCommand}"
+                                            HorizontalAlignment="Left">
+                                            <materialDesign:PackIcon
+                                            Kind="ArrowLeft"
+                                            HorizontalAlignment="Right" />
+                                        </Button>
+                                    </StackPanel>
+                                </materialDesign:ColorZone>
+                                <Grid
+                                        Grid.Row="1"
+                                        Margin="0 6 0 0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top"
+                                        Width="256">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                        <RowDefinition Height="auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBox
+                                        materialDesign:HintAssist.Hint="{Binding LoginMessage}"
+                                        materialDesign:HintAssist.IsFloating="True"
+                                        Margin="0 12 0 0"
+                                        Width="200" HorizontalAlignment="Center" Text="{Binding Login}"/>
+                                    <PasswordBox x:Name="PasswordBox"
+                                        Grid.Row="1"
+                                        materialDesign:HintAssist.Hint="{Binding PasswordMessage}"
+                                        materialDesign:HintAssist.IsFloating="True"
+                                        Margin="0 12 0 0"
+                                        Width="200" HorizontalAlignment="Center"/>
+                                    <Grid Grid.Row="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                                Grid.ColumnSpan="2" 
+                                                Width="150" 
+                                                Margin="0 5 0 0" 
+                                                Command="{Binding LogIn}">
+                                            Войти
+                                        </Button>
+
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}" 
+                                                Grid.Row="1"  
+                                                Margin="0 5 5 0" 
+                                                FontSize="11" 
+                                                Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                                            <Button.CommandParameter>
+                                                <pages:Registration/>
+                                            </Button.CommandParameter>
+                                            Регистрация
+                                        </Button>
+                                        
+                                        <Button Style="{StaticResource MaterialDesignFlatButton}"
+                                                Grid.Row="1" 
+                                                Grid.Column="1"  
+                                                Margin="5 5 0 0" 
+                                                FontSize="11">
+                                            Забыл пароль
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                        </materialDesign:Flipper.BackContent>
+                    </materialDesign:Flipper>
+                    <ListBox x:Name="DemoItemsListBox" Margin="0 16 0 16" SelectedIndex="0"                         
+                                 ItemsSource="{Binding MenuItems}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="32 0 32 0" FontSize="14" FontWeight="Bold" MouseDown="TextBlock_MouseDown"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </materialDesign:DrawerHost.LeftDrawerContent>
+            <DockPanel>
+                <materialDesign:ColorZone Padding="10" materialDesign:ShadowAssist.ShadowDepth="Depth2"
+                                                Mode="PrimaryMid" DockPanel.Dock="Top">
+                    <DockPanel>
+                        <ToggleButton Style="{StaticResource MaterialDesignHamburgerToggleButton}" IsChecked="False"
+                                            x:Name="MenuToggleButton"/>
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="48" FontFamily="Palace Script MT">Galery</TextBlock>
+                    </DockPanel>
+                </materialDesign:ColorZone>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <ScrollViewer Grid.Row="1" 
+                                      HorizontalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.HorizontalScrollBarVisibilityRequirement}"
+                                      VerticalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.VerticalScrollBarVisibilityRequirement}" 
+                                      Padding="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.MarginRequirement}">
+                        <ContentControl Content="{Binding Content}" />
+                    </ScrollViewer>
+
+                    <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}" x:Name="MainSnackbar"
+                                                Grid.Row="1" />
+                </Grid>
+            </DockPanel>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
 </Window>

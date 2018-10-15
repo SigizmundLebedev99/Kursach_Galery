@@ -1,44 +1,129 @@
-﻿using Galery.ClientLogic;
-using Galery.ClientLogic.Concreate;
-using System.ComponentModel;
-using System.IO;
-using System.Net.Http;
-using System.Windows.Input;
+﻿using Galery.Pages;
+using MaterialDesignThemes.Wpf;
+using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using static Galery.App;
 
 namespace Galery.VM
 {
     class MainVM : BaseVM
     {
-        IClientService service;
-
         public MainVM()
         {
-            service = new ClientService("http://localhost:49676/");
+            AnonimousUserMenu();
+            LoggedIn += (isAdmin) => 
+            {
+                if (isAdmin)
+                    AdminMenu();
+                else
+                    AuthorizedUserMenu();
+                Content = MenuItems[0].GetContent();
+                OnPropertyChanged("CurrentUser");
+                OnPropertyChanged("MenuItems");
+            };
+            LoginVM = new LoginVM(this);
         }
 
-        public string Path { get; set; }
+        public MenuItem[] MenuItems { get; private set; }
 
-        string _result;
-        public string Result { get { return _result; }  set { _result = value; OnPropertyChanged("Result"); } }
+        public LoginVM LoginVM { get; }
+        public bool LoginFlip { get; private set; } = false;
+        public void FlipLoginPlateBack()
+        {
+            LoginFlip = false;
+            OnPropertyChanged("LoginFlip");
+        }
 
-        public ICommand Send
+        private object _content;
+        public object Content {
+            get
+            {
+                return _content;
+            }
+            set
+            {
+                _content = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public UserVM CurrentUser
         {
             get
             {
-                return new DelegateCommand(async (obj) =>
-                {
-                    byte[] bytes = File.ReadAllBytes(@"C:\Users\hp\Pictures\images\moss4.jpg");
-                    var res =  await service.Load.LoadImage(bytes);
-                    if (res.IsSuccessStatusCode)
+                if (User == null)
+                    return new UserVM("Вы не авторизованы", new PackIcon()
                     {
-                        var result = await res.Content.ReadAsAsync<string>();
-                        if (string.IsNullOrEmpty(result))
-                            Result = "O shit";
-                    }
-                    else
-                        Result = res.ReasonPhrase + $":\n{await res.Content.ReadAsStringAsync()}";
-                });
+                        Kind = PackIconKind.AccountCircle,
+                          Height = 160,
+                          Width = 160,
+                          VerticalAlignment = VerticalAlignment.Center,
+                          HorizontalAlignment = HorizontalAlignment.Center
+                    });
+                if(User.Avatar == null)
+                    return new UserVM(User.Username, new PackIcon()
+                    {
+                        Kind = PackIconKind.AccountBox,
+                        Height = 160,
+                        Width = 160,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    });
+                else
+                {
+                    return new UserVM(User.Username, new Image
+                    {
+                        Height = 160,
+                        Width = 160,
+                        Stretch = Stretch.UniformToFill,
+                        Source = (ImageSource)new ImageSourceConverter().ConvertFromString(ServerAdress + User.Avatar)
+                    });
+                }
             }
+        }
+
+        public void SetPussFunc(Func<string> getPass, Action cleanPass)
+        {
+            LoginVM.GetPassword = getPass;
+            LoginVM.CleanPassword = cleanPass;
+        }
+
+        private void AuthorizedUserMenu()
+        {
+            MenuItems = new MenuItem[]
+            {
+                new MenuItem("Моя галерея",()=>null),
+                new MenuItem("Новые",()=>null),
+                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Понравившиеся",()=>null),
+                new MenuItem("Подписки",()=>null),
+                new MenuItem("Жанры",()=>null),
+                new MenuItem("Вся база",()=>null)
+            };
+        }
+
+        private void AnonimousUserMenu()
+        {
+            MenuItems = new MenuItem[]
+            {
+                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Авторы",()=>null),
+                new MenuItem("Жанры",()=>null),
+                new MenuItem("Вся база",()=>null)
+            };
+        }
+
+        private void AdminMenu()
+        {
+            MenuItems = new MenuItem[]
+            {
+                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Авторы", ()=>null),
+                new MenuItem("Жанры",()=>null),
+                new MenuItem("Вся база",()=>null)
+            };
         }
     }
 }

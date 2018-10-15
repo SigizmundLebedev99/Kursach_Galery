@@ -20,15 +20,21 @@ namespace Galery.Server.Controllers
         }
 
         [HttpPost("image")]
-        public Task<string> LoadPicture(IFormFile file)
+        public async Task<IActionResult> LoadPicture(IFormFile file)
         {
-            return _file.SavePicture(file);
+            var res = await _file.SavePicture(file);
+            if (res == null)
+                return BadRequest();
+            return Ok(res);
         }
 
         [HttpPost("avatar")]
-        public Task<string> LoadAvatar([FromForm]IFormFile file)
+        public async Task<IActionResult> LoadAvatar(IFormFile file)
         {
-            return _file.SaveAvatar(file);
+            var res = await _file.SaveAvatar(file);
+            if (res == null)
+                return BadRequest();
+            return Ok(res);
         }
     }
 }

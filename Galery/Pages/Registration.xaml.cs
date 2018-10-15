@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galery.VM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,13 +17,14 @@ using System.Windows.Shapes;
 namespace Galery.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для CreatePicture.xaml
+    /// Логика взаимодействия для Registration.xaml
     /// </summary>
-    public partial class CreatePicture : Page
+    public partial class Registration : UserControl
     {
-        public CreatePicture()
+        public Registration()
         {
             InitializeComponent();
+            DataContext = new RegistrationVM(() => Password.Password, () => Confirm.Password);
         }
     }
 }

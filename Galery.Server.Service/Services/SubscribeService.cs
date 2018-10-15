@@ -61,7 +61,7 @@ namespace Galery.Server.Service.Services
             catch (NotFoundException) { throw; }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+                throw new DatabaseException("Не удалось удалить данные", ex.Message);
             }
         }
 
@@ -77,7 +77,7 @@ namespace Galery.Server.Service.Services
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Galery.Server.Service.Services
             catch (NotFoundException) { throw; }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
             }
         }
 
@@ -146,6 +146,22 @@ namespace Galery.Server.Service.Services
                 {
                     await Connect(connection);
                     return await connection.QueryAsync<UserDTO>("GetSubscribersForUser", new { userId }, null, null, System.Data.CommandType.StoredProcedure);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось добавить данные", ex.Message);
+            }
+        }
+
+        public async Task<IEnumerable<UserDTO>> UserSearch(string name)
+        {
+            try
+            {
+                using (var connection = _factory.CreateConnection())
+                {
+                    await Connect(connection);
+                    return await connection.QueryAsync<UserDTO>("UserSearch", new { search = name }, null, null, System.Data.CommandType.StoredProcedure);
                 }
             }
             catch (Exception ex)

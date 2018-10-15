@@ -33,5 +33,7 @@ namespace Galery.ClientLogic
         Task<HttpResponseMessage> GetPicturesByTag(int tagId, int? skip, int? take);
 
         Task<HttpResponseMessage> GetNewPictures(int? skip, int? take);
+
+        Task<HttpResponseMessage> GetNewPicturesFromSubscribes(int userId, int? skip, int? take);
     }
 }

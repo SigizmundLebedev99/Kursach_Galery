@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galery.VM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,18 @@ namespace Galery
     /// </summary>
     public partial class MainWindow : Window
     {
+        readonly MainVM MainVm;
         public MainWindow()
         {
             InitializeComponent();
+            MainVm = (MainVM)this.DataContext;
+            MainVm.SetPussFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);
+        }
+
+        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            var content = (Galery.VM.MenuItem)((TextBlock)sender).DataContext;
+            MainVm.Content = content.GetContent();
         }
     }
 }

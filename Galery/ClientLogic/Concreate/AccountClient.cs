@@ -25,12 +25,12 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> CreateUser(CreateUserDTO model)
         {
-            return _client.PostAsJsonAsync(_hostAdress + "/api/Account", model);
+            return _client.PostAsJsonAsync("/api/Account", model);
         }
 
         public Task<HttpResponseMessage> Token(LoginDTO model)
         {
-            return _client.PostAsJsonAsync(_hostAdress + "/api/Account/token", model);
+            return _client.PostAsJsonAsync("/api/Account/token", model);
         }
     }
 }

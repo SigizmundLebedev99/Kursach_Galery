@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galery.VM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,11 +16,24 @@ using System.Windows.Shapes;
 
 namespace Galery.Pages
 {
-    public partial class TopPictures : Page
+    /// <summary>
+    /// Логика взаимодействия для TopPictures.xaml
+    /// </summary>
+    public partial class TopPictures : UserControl
     {
-        public TopPictures()
+        readonly TopPicturesVM Context;
+
+        internal TopPictures()
         {
+            Context = new TopPicturesVM();
+            DataContext = Context;
             InitializeComponent();
+            this.Loaded += LoadDataFromServer;
+        }
+
+        private async void LoadDataFromServer(object sender, RoutedEventArgs e)
+        {
+            await Context.LoadData();
         }
     }
 }

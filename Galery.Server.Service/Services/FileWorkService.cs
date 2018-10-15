@@ -103,12 +103,9 @@ namespace Galery.Server.Service.Services
                 if (file == null || string.IsNullOrEmpty(_hosting.WebRootPath))
                     return null;
 
-
                 Image<Rgba32> image = Image.Load(file.OpenReadStream());
 
-
                 string hash = GetHashFromFile(image.SavePixelData());
-
 
                 string dir1 = _hosting.WebRootPath + "/Files/Pictures/" + hash.Substring(0, 2);
                 string dir2 = $"{dir1}/{hash.Substring(2, 2)}/";
