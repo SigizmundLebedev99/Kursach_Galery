@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using MaterialDesignThemes.Wpf;
 using System;
+using Galery.ClientLogic.Results;
 
 namespace Galery.VM
 {
@@ -57,7 +58,7 @@ namespace Galery.VM
             }
             else if (res.StatusCode == HttpStatusCode.BadRequest)
             {
-                var responce = await res.Content.ReadAsAsync<BadRequestResult>();
+                var responce = await res.Content.ReadAsAsync<BadInputResult>();
                 if (responce.Email != null && responce.Email.Length > 0)
                 {
                     LoginMessage = "Неверный логин";
@@ -71,9 +72,9 @@ namespace Galery.VM
                     CleanPassword();
                 }
             }
-            else if (res.StatusCode == HttpStatusCode.InternalServerError)
+            else
             {
-                
+                await App.ShowErrorMessage("Не удалось войти: " + res.ReasonPhrase);
             }
         }
 
@@ -87,10 +88,5 @@ namespace Galery.VM
             Login = string.Empty;
         }
 
-        private class BadRequestResult
-        {
-            public string[] Email { get; set; }
-            public string[] Password { get; set; }
-        }
     }
 }

@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="Galery.Resources.ErrorMessage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Galery.Resources"
+             mc:Ignorable="d" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" Width="237">
+    <StackPanel>
+        <materialDesign:ColorZone Background="Red" Height="50">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="60"/>
+                </Grid.ColumnDefinitions>
+                <materialDesign:PackIcon Kind="AlertDecagram" Foreground="White" Height="32" Margin="10" Width="38"/>
+                <Button Grid.Column="2" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" 
+                        Foreground="Red"
+                        Background="White"
+                        IsCancel="True"  
+                        VerticalAlignment="Center" 
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+                    <materialDesign:PackIcon Kind="Cancel" Height="26" Width="26"/>
+                </Button>
+            </Grid>
+        </materialDesign:ColorZone>
+        <TextBlock TextWrapping="Wrap" Margin="10" TextAlignment="Center" FontSize="18">
+            Что-то пошло не так!
+        </TextBlock>
+        <TextBlock x:Name="ErrorInfo" TextWrapping="Wrap" Margin="0 0 0 10" TextAlignment="Center" FontSize="16"/>
+    </StackPanel>
+</UserControl>

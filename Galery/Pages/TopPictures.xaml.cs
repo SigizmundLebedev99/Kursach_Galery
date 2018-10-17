@@ -33,7 +33,14 @@ namespace Galery.Pages
 
         private async void LoadDataFromServer(object sender, RoutedEventArgs e)
         {
-            await Context.LoadData();
+            try
+            {
+                await Context.LoadData();
+            }
+            catch
+            {
+                await App.ShowErrorMessage("Не удалось подключиться к серверу");
+            }
         }
     }
 }

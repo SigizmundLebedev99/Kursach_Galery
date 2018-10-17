@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Galery.Server.DAL.Models;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace Galery.Server.Controllers
 {
@@ -99,6 +101,8 @@ namespace Galery.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody]CreateUserDTO model)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             var user = _mapper.Map<User>(model);
             user.DateOfCreation = DateTime.Now;
             var res = await _userManager.CreateAsync(user, model.Password);
@@ -115,7 +119,7 @@ namespace Galery.Server.Controllers
 
                 return Ok();
             }
-            return BadRequest(res);
+            return StatusCode((int)HttpStatusCode.Conflict, res.Errors);
         }
 
         [HttpGet]

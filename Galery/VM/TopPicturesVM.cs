@@ -25,6 +25,10 @@ namespace Galery.VM
                 LoadingVizibility = Visibility.Collapsed;
                 OnPropertyChanged("LoadingVizibility");
             }
+            else
+            {
+                await App.ShowErrorMessage("Не удалось извлечь данные: " + res.ReasonPhrase);
+            }
         }
     }
 }

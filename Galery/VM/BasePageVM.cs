@@ -12,6 +12,7 @@ namespace Galery.VM
         public BasePageVM(MainVM mainVM)
         {
             _mainVM = mainVM;
+            PreviousContent = _mainVM.Content;
         }
 
         private MainVM _mainVM;
@@ -23,7 +24,8 @@ namespace Galery.VM
                 return new DelegateCommand(obj =>
                 {
                     _mainVM.Content = PreviousContent;
-                });
+                }, 
+                obj=>PreviousContent != null);
             }
         }
     }

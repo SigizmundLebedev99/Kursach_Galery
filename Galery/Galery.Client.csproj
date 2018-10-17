@@ -83,6 +83,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClientLogic\Results\BadInputResult.cs" />
+    <Compile Include="ClientLogic\Results\BadRegistrationResult.cs" />
     <Compile Include="Pages\Authors.xaml.cs">
       <DependentUpon>Authors.xaml</DependentUpon>
     </Compile>
@@ -92,8 +94,21 @@
     <Compile Include="Pages\TopPictures.xaml.cs">
       <DependentUpon>TopPictures.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\UserInfo.xaml.cs">
+      <DependentUpon>UserInfo.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\ErrorMessage.xaml.cs">
+      <DependentUpon>ErrorMessage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Loading.xaml.cs">
+      <DependentUpon>Loading.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\RegistrationMessage.xaml.cs">
+      <DependentUpon>RegistrationMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VM\BasePageVM.cs" />
     <Compile Include="VM\BaseVM.cs" />
+    <Compile Include="VM\CommonVM.cs" />
     <Compile Include="VM\DelegateCommand.cs" />
     <Compile Include="VM\ImagePathConverter.cs" />
     <Compile Include="VM\LoginVM.cs" />
@@ -101,6 +116,7 @@
     <Compile Include="VM\MenuItem.cs" />
     <Compile Include="VM\RegistrationVM.cs" />
     <Compile Include="VM\TopPicturesVM.cs" />
+    <Compile Include="VM\UserPageVM.cs" />
     <Compile Include="VM\UserVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -140,6 +156,22 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\UserInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ErrorMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Loading.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\RegistrationMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -168,9 +200,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Galery.Common\Galery.Common.csproj">
       <Project>{ba4f472a-04ae-4307-b8ed-d58fd766ca6d}</Project>

@@ -21,10 +21,10 @@
                 Margin="0 12 0 0"
                 Width="200" HorizontalAlignment="Center" Text="{Binding Login}"/>
             <TextBox
-                materialDesign:HintAssist.Hint="{Binding Email}"
+                materialDesign:HintAssist.Hint="{Binding EmailMessage}"
                 materialDesign:HintAssist.IsFloating="True"
                 Margin="0 12 0 0"
-                Width="200" HorizontalAlignment="Center" Text="{Binding EmailMessage}"/>
+                Width="200" HorizontalAlignment="Center" Text="{Binding Email}"/>
             <PasswordBox x:Name="Password"
                 Grid.Row="1"
                 materialDesign:HintAssist.Hint="{Binding PasswordMessage}"
@@ -45,10 +45,13 @@
                     <materialDesign:PackIcon
                     Kind="FileImage"
                     Height="24"
-                    Width="24" />
+                    Width="24"/>
                 </Button>
             </StackPanel>
-            <Button HorizontalAlignment="Center" Margin="20" materialDesign:ShadowAssist.ShadowDepth="Depth3">
+            <Button HorizontalAlignment="Center" 
+                    Margin="20" 
+                    materialDesign:ShadowAssist.ShadowDepth="Depth3" 
+                    Command="{Binding Registration}">
                 Регистрация
             </Button>
         </StackPanel>

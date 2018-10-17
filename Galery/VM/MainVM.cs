@@ -1,4 +1,5 @@
 ﻿using Galery.Pages;
+using Galery.Resources;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Windows;
@@ -84,7 +85,7 @@ namespace Galery.VM
             }
         }
 
-        public void SetPussFunc(Func<string> getPass, Action cleanPass)
+        public void SetPassFunc(Func<string> getPass, Action cleanPass)
         {
             LoginVM.GetPassword = getPass;
             LoginVM.CleanPassword = cleanPass;

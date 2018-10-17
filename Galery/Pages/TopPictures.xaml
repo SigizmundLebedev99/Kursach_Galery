@@ -6,24 +6,22 @@
              xmlns:vm="clr-namespace:Galery.VM"
              mc:Ignorable="d" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:resources="clr-namespace:Galery.Resources"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <vm:ImagePathConverter x:Key="imagePathConverter" />
     </UserControl.Resources>
     <DockPanel>
-        <StackPanel Orientation="Horizontal" Margin="10" Height="50" DockPanel.Dock="Top">
+        <Grid Margin="10" Height="50" DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="120"/>
+            </Grid.ColumnDefinitions>
             <materialDesign:PackIcon Kind="DiceD20" Foreground="#FF850985" Margin="0 0 10 0" Height="50" Width="49"/>
-            <TextBlock Text="Топ лучших картин галереи" TextAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="#FF850985" Height="30" Margin="0,10" Width="295"/>
-            <StackPanel Margin="20 0 0 0" Visibility="{Binding LoadingVizibility}" Orientation="Horizontal" VerticalAlignment="Center">
-                <ProgressBar
-                      Style="{DynamicResource MaterialDesignCircularProgressBar}"
-                      HorizontalAlignment="Center"
-                      Margin="10"
-                      IsIndeterminate="True"
-                      Value="0" />
-                <TextBlock Text="Загрузка" FontSize="16" Foreground="#FF850985" VerticalAlignment="Center"/>
-            </StackPanel>
-        </StackPanel>
+            <TextBlock Grid.Column="1" Text="Топ лучших картин галереи" TextAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="#FF850985" Height="30" Margin="0,10" Width="295"/>
+            <resources:Loading Grid.Column="2"/>
+        </Grid>
 
         <ListView ItemsSource="{Binding PicturesTop}">
             <ListView.ItemsPanel>

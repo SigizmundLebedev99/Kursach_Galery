@@ -1,10 +1,10 @@
 ﻿using Galery.ClientLogic;
 using Galery.ClientLogic.Concreate;
+using Galery.Resources;
 using Galery.Server.DTO;
+using MaterialDesignThemes.Wpf;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,5 +34,11 @@ namespace Galery
         }
 
         internal static string ServerAdress { get; private set; }
+
+        internal static Task ShowErrorMessage(string Message)
+        {
+            DialogHost.CloseDialogCommand.Execute(null, null);
+            return DialogHost.Show(new ErrorMessage(Message));
+        }
     }
 }
