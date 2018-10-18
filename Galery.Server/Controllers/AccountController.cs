@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Galery.Server.DAL.Models;
@@ -60,27 +63,8 @@ namespace Galery.Server.Controllers
                             ModelState.AddModelError("Email", "Вы не подтвердили свой email");
                             return BadRequest(ModelState);
                         }
-                        var roles = await _userManager.GetRolesAsync(user);
-                        var now = DateTime.UtcNow;
-                        // создаем JWT-токен
-                        var jwt = new JwtSecurityToken(
-                            issuer: AuthTokenOptions.ISSUER,
-                            notBefore: now,
-                            expires: now.Add(TimeSpan.FromMinutes(AuthTokenOptions.LIFETIME)),
-                            signingCredentials: new SigningCredentials(AuthTokenOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-                        var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
-
-                        var response = new TokenResponse
-                        {
-                            Access_token = encodedJwt,
-                            Username = user.UserName,
-                            UserId = user.Id,
-                            Avatar = user.Avatar,
-                            Roles = roles,
-                            Start = now,
-                            Finish = now.Add(TimeSpan.FromMinutes(AuthTokenOptions.LIFETIME))
-                        };
-                        return Ok(response);
+                        
+                        return Ok(GetToken(user));
                     }
                     ModelState.AddModelError("Password", "Wrong password");
                     return BadRequest(ModelState);
@@ -93,6 +77,49 @@ namespace Galery.Server.Controllers
             {
                 throw;
             }
+        }
+
+        private async Task<TokenResponse> GetToken(User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            var securityKey = AuthTokenOptions.GetSymmetricSecurityKey();
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(AuthTokenOptions.ISSUER,
+                AuthTokenOptions.AUDIENCE,
+                claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
+
+            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new TokenResponse
+            {
+                Access_token = encodedJwt,
+                Username = user.UserName,
+                UserId = user.Id,
+                Avatar = user.Avatar,
+            };
+        }
+
+        private ClaimsIdentity GetIdentity(User user, IEnumerable<string> roles)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+            };
+            foreach (string role in roles)
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            ClaimsIdentity claimsIdentity =
+            new ClaimsIdentity(claims, "Name");
+            return claimsIdentity;
         }
 
         /// <summary>

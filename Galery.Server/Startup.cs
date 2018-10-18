@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using Galery.Server.DAL;
 using Galery.Server.DAL.Identity;
@@ -36,6 +37,27 @@ namespace Galery.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                    .AddJwtBearer(options =>
+                    {
+                        options.RequireHttpsMetadata = false;
+                        options.Authority = AuthTokenOptions.AUDIENCE;
+                        options.Audience = AuthTokenOptions.AUDIENCE;
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ClockSkew = TimeSpan.FromMinutes(5),
+                            IssuerSigningKey = AuthTokenOptions.GetSymmetricSecurityKey(),
+                            RequireSignedTokens = true,
+                            RequireExpirationTime = true,
+                            ValidateLifetime = true,
+                            ValidateAudience = true,
+                            ValidAudience = AuthTokenOptions.AUDIENCE,
+                            ValidateIssuer = false,
+                            ValidIssuer = AuthTokenOptions.ISSUER
+                        };
+                    });
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -46,28 +68,11 @@ namespace Galery.Server
                 options.User.RequireUniqueEmail = true;
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.RequireHttpsMetadata = false;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidIssuer = AuthTokenOptions.ISSUER,
-                            ValidateAudience = false,
-                            ValidateLifetime = true,
-                            IssuerSigningKey = AuthTokenOptions.GetSymmetricSecurityKey(),
-                            ValidateIssuerSigningKey = true
-                        };
-                    });
-
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "Galery API", Version = "v1" });
 
                 var basePath = AppContext.BaseDirectory;
-                //var xmlPath = Path.Combine(basePath, "Galery.Server.xml");
-                //c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("Bearer", new ApiKeyScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -111,6 +116,7 @@ namespace Galery.Server
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -118,11 +124,9 @@ namespace Galery.Server
 
                 c.DocExpansion(DocExpansion.None);
             });
-
-            app.UseStaticFiles();
-
             app.UseMiddleware(typeof(ErrorHandlerMiddleware));
-
+            app.UseAuthentication();
+           
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

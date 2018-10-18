@@ -109,15 +109,15 @@
     <Compile Include="VM\BasePageVM.cs" />
     <Compile Include="VM\BaseVM.cs" />
     <Compile Include="VM\CommonVM.cs" />
-    <Compile Include="VM\DelegateCommand.cs" />
-    <Compile Include="VM\ImagePathConverter.cs" />
+    <Compile Include="VM\Helpers\DelegateCommand.cs" />
+    <Compile Include="VM\Helpers\ImagePathConverter.cs" />
+    <Compile Include="VM\Helpers\MenuItem.cs" />
+    <Compile Include="VM\Helpers\UserVM.cs" />
     <Compile Include="VM\LoginVM.cs" />
     <Compile Include="VM\MainVM.cs" />
-    <Compile Include="VM\MenuItem.cs" />
     <Compile Include="VM\RegistrationVM.cs" />
     <Compile Include="VM\TopPicturesVM.cs" />
     <Compile Include="VM\UserPageVM.cs" />
-    <Compile Include="VM\UserVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

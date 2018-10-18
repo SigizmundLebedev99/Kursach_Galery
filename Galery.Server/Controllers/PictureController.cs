@@ -6,6 +6,8 @@ using Galery.Server.DAL.Models;
 using Galery.Server.Interfaces;
 using Galery.Server.Service.DTO.PictureDTO;
 using Galery.Server.Service.Infrostructure;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -17,10 +19,12 @@ namespace Galery.Server.Controllers
     public class PictureController : Controller
     {
         readonly IPictureService _service;
+        readonly UserManager<User> _userManager;
 
-        public PictureController(IPictureService service)
+        public PictureController(IPictureService service, UserManager<User> userManager)
         {
             _service = service;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -60,8 +64,9 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
-        public async Task<IActionResult> GetPictureById(int id, [FromHeader]int userId)
+        public async Task<IActionResult> GetPictureById(int id)
         {
+            var userId = Convert.ToInt32(_userManager.GetUserId(User));
             var res = await _service.GetPictureByIdAsync(id, userId);
             return GetResult(res, true);
         }
