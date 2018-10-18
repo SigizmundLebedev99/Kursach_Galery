@@ -21,26 +21,9 @@ namespace Galery.Pages
     /// </summary>
     public partial class TopPictures : UserControl
     {
-        readonly TopPicturesVM Context;
-
         internal TopPictures()
-        {
-            Context = new TopPicturesVM();
-            DataContext = Context;
+        {           
             InitializeComponent();
-            this.Loaded += LoadDataFromServer;
-        }
-
-        private async void LoadDataFromServer(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                await Context.LoadData();
-            }
-            catch
-            {
-                await App.ShowErrorMessage("Не удалось подключиться к серверу");
-            }
         }
     }
 }

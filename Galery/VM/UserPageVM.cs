@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Galery.VM.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,11 @@ namespace Galery.VM
 {
     class UserPageVM : BasePageVM
     {
-        public UserPageVM(MainVM mainVM) : base(mainVM) { }
+        public UserPageVM(MainVM mainVM, Roles role) : base(mainVM)
+        {
+
+        }
+
+        public MenuItem[] MenuItems { get; set; }
     }
 }

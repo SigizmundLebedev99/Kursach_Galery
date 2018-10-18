@@ -13,15 +13,29 @@ namespace Galery.VM
     public class MenuItem : INotifyPropertyChanged
     {
         public string Name { get; set; }
-        public Func<object> GetContent { get; set; }
+
+        readonly Func<FrameworkElement> _getContent;
+        readonly Func<object> _vmSetter;
+        private FrameworkElement _content;
+
         private ScrollBarVisibility _horizontalScrollBarVisibilityRequirement;
         private ScrollBarVisibility _verticalScrollBarVisibilityRequirement;
         private Thickness _marginRequirement = new Thickness(16);
 
-        public MenuItem(string name, Func<object> pageFactory)
+        public MenuItem(string name, Func<FrameworkElement> pageFactory, Func<object> VMsetter = null)
         {
             Name = name;
-            GetContent = pageFactory;
+            _getContent = pageFactory;
+            _vmSetter = VMsetter;
+        }
+
+        public FrameworkElement GetContent()
+        {
+            if (_content == null)
+                _content = _getContent();
+            if(_vmSetter!=null)
+                _content.DataContext = _vmSetter();
+            return _content;
         }
 
         public ScrollBarVisibility HorizontalScrollBarVisibilityRequirement

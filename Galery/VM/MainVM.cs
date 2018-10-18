@@ -97,7 +97,7 @@ namespace Galery.VM
             {
                 new MenuItem("Моя галерея",()=>null),
                 new MenuItem("Новые",()=>null),
-                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
                 new MenuItem("Понравившиеся",()=>null),
                 new MenuItem("Подписки",()=>null),
                 new MenuItem("Жанры",()=>null),
@@ -109,7 +109,7 @@ namespace Galery.VM
         {
             MenuItems = new MenuItem[]
             {
-                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
                 new MenuItem("Авторы",()=>null),
                 new MenuItem("Жанры",()=>null),
                 new MenuItem("Вся база",()=>null)
@@ -120,7 +120,7 @@ namespace Galery.VM
         {
             MenuItems = new MenuItem[]
             {
-                new MenuItem("Топ лучших",()=>new TopPictures()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
                 new MenuItem("Авторы", ()=>null),
                 new MenuItem("Жанры",()=>null),
                 new MenuItem("Вся база",()=>null)

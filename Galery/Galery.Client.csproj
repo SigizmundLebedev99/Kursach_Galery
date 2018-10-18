@@ -106,9 +106,13 @@
     <Compile Include="Resources\RegistrationMessage.xaml.cs">
       <DependentUpon>RegistrationMessage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\UserPicturesList.xaml.cs">
+      <DependentUpon>UserPicturesList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VM\BasePageVM.cs" />
     <Compile Include="VM\BaseVM.cs" />
     <Compile Include="VM\CommonVM.cs" />
+    <Compile Include="VM\Helpers\Roles.cs" />
     <Compile Include="VM\Helpers\DelegateCommand.cs" />
     <Compile Include="VM\Helpers\ImagePathConverter.cs" />
     <Compile Include="VM\Helpers\MenuItem.cs" />
@@ -169,6 +173,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\RegistrationMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UserPicturesList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,4 +1,5 @@
 ﻿using Galery.VM;
+using Galery.VM.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,10 +22,10 @@ namespace Galery.Pages
     /// </summary>
     public partial class UserInfo : UserControl
     {
-        internal UserInfo(MainVM mainVM)
+        internal UserInfo(MainVM mainVM, Roles role)
         {
             InitializeComponent();
-            this.DataContext = new UserPageVM(mainVM);
+            this.DataContext = new UserPageVM(mainVM, role);
         }
     }
 }
