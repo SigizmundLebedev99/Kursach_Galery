@@ -92,7 +92,7 @@ namespace Galery.VM
                             }
                             else
                             {
-                                throw new NotImplementedException();
+                                await App.ShowErrorMessage("Не добавить аватар: " + res.ReasonPhrase);
                             }
                             isLoadImage = false;
                         }

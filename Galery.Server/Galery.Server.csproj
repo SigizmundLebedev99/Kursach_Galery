@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Files\Pictures\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.9" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
@@ -30,6 +26,10 @@
     <ProjectReference Include="..\Galery.Common\Galery.Common.csproj" />
     <ProjectReference Include="..\Galery.Server.DAL\Galery.Server.DAL.csproj" />
     <ProjectReference Include="..\Galery.Server.Service\Galery.Server.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties Properties_4launchSettings_1json__JSONSchema="http://json.schemastore.org/pattern" /></VisualStudio></ProjectExtensions>

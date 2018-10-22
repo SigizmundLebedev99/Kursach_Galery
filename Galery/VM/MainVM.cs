@@ -1,5 +1,5 @@
 ﻿using Galery.Pages;
-using Galery.Resources;
+using Galery.VM.Helpers;
 using MaterialDesignThemes.Wpf;
 using System;
 using System.Windows;
@@ -11,20 +11,30 @@ namespace Galery.VM
 {
     class MainVM : BaseVM
     {
+        public CommonVM CommonVM { get; }
+
         public MainVM()
         {
             AnonimousUserMenu();
-            LoggedIn += (isAdmin) => 
+            CommonVM = new CommonVM(this);
+            LoggedIn += (userId, isAdmin) => 
             {
                 if (isAdmin)
+                {
+                    CommonVM.CurrentRole = Roles.Admin;
                     AdminMenu();
+                }
                 else
-                    AuthorizedUserMenu();
-                Content = MenuItems[0].GetContent();
+                {
+                    CommonVM.CurrentRole = Roles.Authorized;
+                    AuthorizedUserMenu(userId);
+                }
+                Content = MenuItems[0].GetContent;
                 OnPropertyChanged("CurrentUser");
                 OnPropertyChanged("MenuItems");
             };
             LoginVM = new LoginVM(this);
+            Content = MenuItems[0].GetContent;
         }
 
         public MenuItem[] MenuItems { get; private set; }
@@ -91,13 +101,13 @@ namespace Galery.VM
             LoginVM.CleanPassword = cleanPass;
         }
 
-        private void AuthorizedUserMenu()
+        private void AuthorizedUserMenu(int userId)
         {
             MenuItems = new MenuItem[]
             {
-                new MenuItem("Моя галерея",()=>null),
+                new MenuItem("Моя галерея",()=>new UserInfo(), ()=>new UserInfoVM(this, userId, Roles.Authorized)),
                 new MenuItem("Новые",()=>null),
-                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
                 new MenuItem("Понравившиеся",()=>null),
                 new MenuItem("Подписки",()=>null),
                 new MenuItem("Жанры",()=>null),
@@ -109,7 +119,7 @@ namespace Galery.VM
         {
             MenuItems = new MenuItem[]
             {
-                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
                 new MenuItem("Авторы",()=>null),
                 new MenuItem("Жанры",()=>null),
                 new MenuItem("Вся база",()=>null)
@@ -120,7 +130,7 @@ namespace Galery.VM
         {
             MenuItems = new MenuItem[]
             {
-                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM()),
+                new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
                 new MenuItem("Авторы", ()=>null),
                 new MenuItem("Жанры",()=>null),
                 new MenuItem("Вся база",()=>null)

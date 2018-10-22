@@ -153,9 +153,8 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <ScrollViewer Grid.Row="1" 
-                                      HorizontalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.HorizontalScrollBarVisibilityRequirement}"
-                                      VerticalScrollBarVisibility="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.VerticalScrollBarVisibilityRequirement}" 
-                                      Padding="{Binding ElementName=DemoItemsListBox, Path=SelectedItem.MarginRequirement}">
+                                      HorizontalScrollBarVisibility="{Binding Content.HorizontalScrollBarVisibilityRequirement}"
+                                      VerticalScrollBarVisibility="{Binding Content.VerticalScrollBarVisibilityRequirement}">
                         <ContentControl Content="{Binding Content}" />
                     </ScrollViewer>
 

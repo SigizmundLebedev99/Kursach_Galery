@@ -1,5 +1,4 @@
 ﻿using Galery.VM;
-using Galery.VM.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,19 +17,14 @@ using System.Windows.Shapes;
 namespace Galery.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для UserInfo.xaml
+    /// Логика взаимодействия для CreatePicture.xaml
     /// </summary>
-    public partial class UserInfo : UserControl
+    public partial class CreatePicture : UserControl
     {
-        internal UserInfo()
+        internal CreatePicture(int userId, MainVM mainVM)
         {
             InitializeComponent();
-        }
-
-        internal UserInfo(MainVM mainVM,int userId, Roles role)
-        {
-            InitializeComponent();
-            this.DataContext = new UserInfoVM(mainVM, userId, role);
+            this.DataContext = new CreatePictureVM(userId, mainVM);
         }
     }
 }

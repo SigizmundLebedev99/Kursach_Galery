@@ -63,8 +63,8 @@ namespace Galery.Server.Controllers
                             ModelState.AddModelError("Email", "Вы не подтвердили свой email");
                             return BadRequest(ModelState);
                         }
-                        
-                        return Ok(GetToken(user));
+                        var res = await GetToken(user);
+                        return Ok(res);
                     }
                     ModelState.AddModelError("Password", "Wrong password");
                     return BadRequest(ModelState);
@@ -105,6 +105,7 @@ namespace Galery.Server.Controllers
                 Username = user.UserName,
                 UserId = user.Id,
                 Avatar = user.Avatar,
+                Roles = roles
             };
         }
 

@@ -11,7 +11,7 @@
                       HorizontalAlignment="Center"
                       Margin="10"
                       IsIndeterminate="True"
-                      Value="0" />
-        <TextBlock Text="Загрузка..." FontSize="16" Foreground="#FF850985" VerticalAlignment="Center"/>
+                      Value="0"/>
+        <TextBlock Text="Загрузка..." FontSize="16" Foreground="#FF673AB7" VerticalAlignment="Center"/>
     </StackPanel>
 </UserControl>

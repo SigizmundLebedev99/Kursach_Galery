@@ -7,15 +7,15 @@ using System.Windows.Input;
 
 namespace Galery.VM
 {
-    class BasePageVM : BaseVM
+    class BasePageVM : BaseWithCommonVM
     {
-        public BasePageVM(MainVM mainVM)
+        public BasePageVM(MainVM mainVM) : base(mainVM)
         {
-            _mainVM = mainVM;
-            PreviousContent = _mainVM.Content;
+            MainVM = mainVM;
+            PreviousContent = MainVM.Content;
         }
 
-        private MainVM _mainVM;
+        protected MainVM MainVM;
         private object PreviousContent;
         public ICommand BackToPrevious
         {
@@ -23,7 +23,7 @@ namespace Galery.VM
             {
                 return new DelegateCommand(obj =>
                 {
-                    _mainVM.Content = PreviousContent;
+                    MainVM.Content = PreviousContent;
                 }, 
                 obj=>PreviousContent != null);
             }

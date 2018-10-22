@@ -27,7 +27,7 @@ namespace Galery.VM
         public string PasswordMessage { get; set; } = "Пароль";
 
         string login;
-        public string Login { get { return login; } set { login = value;OnPropertyChanged(); } }
+        public string Login { get { return login; } set { login = value; OnPropertyChanged(); } }
 
         public ICommand LogIn
         {
@@ -38,7 +38,6 @@ namespace Galery.VM
                     async obj =>
                     {
                         await LogInProcess();
-                        MainVM.FlipLoginPlateBack();
                     },
                     obj =>
                     {
@@ -55,6 +54,7 @@ namespace Galery.VM
             {
                 ResetMessages();
                 App.LogIn(await res.Content.ReadAsAsync<TokenResponse>());
+                MainVM.FlipLoginPlateBack();
             }
             else if (res.StatusCode == HttpStatusCode.BadRequest)
             {

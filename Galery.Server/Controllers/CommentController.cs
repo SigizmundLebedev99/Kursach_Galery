@@ -22,7 +22,7 @@ namespace Galery.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateComment(CreateCommentDTO model)
+        public async Task<IActionResult> CreateComment([FromBody]CreateCommentDTO model)
         {
             var res = await _service.CreateCommentAsync(model);
             return GetResult(res, true);

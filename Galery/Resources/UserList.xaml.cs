@@ -1,6 +1,4 @@
-﻿using Galery.VM;
-using Galery.VM.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,22 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Galery.Pages
+namespace Galery.Resources
 {
     /// <summary>
-    /// Логика взаимодействия для UserInfo.xaml
+    /// Логика взаимодействия для SubscribersList.xaml
     /// </summary>
-    public partial class UserInfo : UserControl
+    public partial class UserList : UserControl
     {
-        internal UserInfo()
+        public UserList()
         {
             InitializeComponent();
-        }
-
-        internal UserInfo(MainVM mainVM,int userId, Roles role)
-        {
-            InitializeComponent();
-            this.DataContext = new UserInfoVM(mainVM, userId, role);
         }
     }
 }

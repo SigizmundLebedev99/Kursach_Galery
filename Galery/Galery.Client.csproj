@@ -88,6 +88,12 @@
     <Compile Include="Pages\Authors.xaml.cs">
       <DependentUpon>Authors.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\CreatePicture.xaml.cs">
+      <DependentUpon>CreatePicture.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\Picture.xaml.cs">
+      <DependentUpon>Picture.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\Registration.xaml.cs">
       <DependentUpon>Registration.xaml</DependentUpon>
     </Compile>
@@ -106,22 +112,32 @@
     <Compile Include="Resources\RegistrationMessage.xaml.cs">
       <DependentUpon>RegistrationMessage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resources\UserList.xaml.cs">
+      <DependentUpon>UserList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Resources\UserPicturesList.xaml.cs">
       <DependentUpon>UserPicturesList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VM\BasePageVM.cs" />
-    <Compile Include="VM\BaseVM.cs" />
+    <Compile Include="VM\Base\BasePageVM.cs" />
+    <Compile Include="VM\Base\BaseVM.cs" />
+    <Compile Include="VM\Base\BaseWithCommonVM.cs" />
     <Compile Include="VM\CommonVM.cs" />
+    <Compile Include="VM\CreatePictureVM.cs" />
+    <Compile Include="VM\Helpers\DateConverter.cs" />
     <Compile Include="VM\Helpers\Roles.cs" />
     <Compile Include="VM\Helpers\DelegateCommand.cs" />
     <Compile Include="VM\Helpers\ImagePathConverter.cs" />
     <Compile Include="VM\Helpers\MenuItem.cs" />
+    <Compile Include="VM\Helpers\SubscribersVM.cs" />
+    <Compile Include="VM\Helpers\SubscribesVM.cs" />
     <Compile Include="VM\Helpers\UserVM.cs" />
     <Compile Include="VM\LoginVM.cs" />
     <Compile Include="VM\MainVM.cs" />
+    <Compile Include="VM\PictureVM.cs" />
     <Compile Include="VM\RegistrationVM.cs" />
     <Compile Include="VM\TopPicturesVM.cs" />
-    <Compile Include="VM\UserPageVM.cs" />
+    <Compile Include="VM\UserInfoVM.cs" />
+    <Compile Include="VM\UserPicturesListVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -152,6 +168,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Pages\CreatePicture.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\Picture.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Pages\Registration.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,6 +197,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\RegistrationMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\UserList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

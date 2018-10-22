@@ -25,12 +25,12 @@ namespace Galery
         internal static IClientService ClientService { get; private set; }
         internal static TokenResponse User { get; private set; }
 
-        internal static event Action<bool> LoggedIn;
+        internal static event Action<int, bool> LoggedIn;
         internal static void LogIn(TokenResponse user)
         {
             ClientService.SetAutenticationHeader(user);
             User = user;
-            LoggedIn?.Invoke(user.Roles.Any(r=>r == "admin"));
+            LoggedIn?.Invoke(user.UserId, user.Roles.Any(r=>r == "admin"));
         }
 
         internal static string ServerAdress { get; private set; }

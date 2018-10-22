@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="Galery.Resources.UserList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Galery.Resources"
+             xmlns:vm="clr-namespace:Galery.VM"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             x:Name="userList"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <vm:ImagePathConverter x:Key="imagePathConverter" />
+        <vm:DateConverter x:Key="dateConverter"/>
+    </UserControl.Resources>
+    <StackPanel>
+        <local:Loading HorizontalAlignment="Center" Visibility="{Binding LoadingVisibility}"/>
+        <ItemsControl ItemsSource="{Binding Users}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <materialDesign:Chip Content="{Binding UserName}" Margin="10" 
+                                         Command="{Binding ElementName=userList, 
+                                         Path=DataContext.CommonVM.SelectUser}" 
+                                         CommandParameter="{Binding Id}">    
+                        <materialDesign:Chip.Icon>
+                            <Image Source="{Binding Avatar, Converter={StaticResource imagePathConverter}}" Stretch="UniformToFill"/>
+                        </materialDesign:Chip.Icon>
+                    </materialDesign:Chip>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

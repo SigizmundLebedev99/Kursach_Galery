@@ -20,7 +20,6 @@ namespace Galery.VM
 
         private ScrollBarVisibility _horizontalScrollBarVisibilityRequirement;
         private ScrollBarVisibility _verticalScrollBarVisibilityRequirement;
-        private Thickness _marginRequirement = new Thickness(16);
 
         public MenuItem(string name, Func<FrameworkElement> pageFactory, Func<object> VMsetter = null)
         {
@@ -29,13 +28,16 @@ namespace Galery.VM
             _vmSetter = VMsetter;
         }
 
-        public FrameworkElement GetContent()
+        public FrameworkElement GetContent
         {
-            if (_content == null)
-                _content = _getContent();
-            if(_vmSetter!=null)
-                _content.DataContext = _vmSetter();
-            return _content;
+            get
+            {
+                if (_content == null)
+                    _content = _getContent();
+                if (_vmSetter != null)
+                    _content.DataContext = _vmSetter();
+                return _content;
+            }
         }
 
         public ScrollBarVisibility HorizontalScrollBarVisibilityRequirement
@@ -50,11 +52,6 @@ namespace Galery.VM
             set { this.MutateVerbose(ref _verticalScrollBarVisibilityRequirement, value, RaisePropertyChanged()); }
         }
 
-        public Thickness MarginRequirement
-        {
-            get { return _marginRequirement; }
-            set { this.MutateVerbose(ref _marginRequirement, value, RaisePropertyChanged()); }
-        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void MutateVerbose<TField>(ref TField field, TField newValue, Action<PropertyChangedEventArgs> raise, [CallerMemberName] string propertyName = null)

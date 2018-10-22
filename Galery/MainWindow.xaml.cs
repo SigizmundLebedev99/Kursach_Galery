@@ -32,7 +32,7 @@ namespace Galery
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
         {
             var content = (Galery.VM.MenuItem)((TextBlock)sender).DataContext;
-            MainVm.Content = content.GetContent();
+            MainVm.Content = content.GetContent;
         }
     }
 }

@@ -6,16 +6,16 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace Galery.VM
 {
-    class TopPicturesVM : BaseVM
+    class TopPicturesVM : BaseWithCommonVM
     {
         private event Action OnLoaded;
-        public TopPicturesVM()
+        public TopPicturesVM(MainVM mainVM) : base(mainVM)
         {
             OnLoaded += async () => await LoadData();
-            LoadingVizibility = Visibility.Visible;
             OnLoaded();
         }
 
@@ -23,6 +23,17 @@ namespace Galery.VM
 
         public List<PictureInfoWithFeedbackDTO> PicturesTop { get; private set; }
         
+        public ICommand someShit
+        {
+            get
+            {
+                return new DelegateCommand(obj =>
+                {
+                    App.ShowErrorMessage("proverka");
+                });
+            }
+        }
+
         public async Task LoadData()
         {
             var res = await App.ClientService.Picture.GetTopPictures(0, 20);

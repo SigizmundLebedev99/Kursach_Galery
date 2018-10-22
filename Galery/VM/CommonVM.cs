@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Galery.Pages;
+using Galery.VM.Helpers;
 using System.Windows.Input;
 
 namespace Galery.VM
 {
     class CommonVM
     {
-        readonly MainVM mainVm;
+        readonly MainVM _mainVm;
+
+        public Roles CurrentRole { get; set; }
 
         public CommonVM(MainVM mainVM)
         {
-
+            _mainVm = mainVM;
         }
 
         public ICommand SelectUser
@@ -24,7 +23,25 @@ namespace Galery.VM
                     (
                     obj =>
                     {
-                        
+                        int userId = (int)obj;
+
+                        _mainVm.Content = new UserInfo(_mainVm, userId, CurrentRole);
+                    }
+                    );
+            }
+        }
+
+        public ICommand SelectPicture
+        {
+            get
+            {
+                return new DelegateCommand
+                    (
+                    obj =>
+                    {
+                        int picId = (int)obj;
+
+                        _mainVm.Content = new Picture(_mainVm, picId, CurrentRole);
                     }
                     );
             }

@@ -18,19 +18,14 @@ using System.Windows.Shapes;
 namespace Galery.Pages
 {
     /// <summary>
-    /// Логика взаимодействия для UserInfo.xaml
+    /// Логика взаимодействия для Picture.xaml
     /// </summary>
-    public partial class UserInfo : UserControl
+    public partial class Picture : UserControl
     {
-        internal UserInfo()
-        {
+        internal Picture(MainVM mainVM, int pictureId, Roles role)
+        { 
             InitializeComponent();
-        }
-
-        internal UserInfo(MainVM mainVM,int userId, Roles role)
-        {
-            InitializeComponent();
-            this.DataContext = new UserInfoVM(mainVM, userId, role);
+            this.DataContext = new PictureVM(mainVM, pictureId, role);
         }
     }
 }
