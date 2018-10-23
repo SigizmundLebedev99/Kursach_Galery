@@ -22,7 +22,7 @@ namespace Galery.ClientLogic.Concreate
         {
             HttpRequestMessage mess = new HttpRequestMessage
             {
-                Content = new StringContent("", Encoding.UTF8, JsonConvert.SerializeObject(model)),
+                Content = new StringContent("", Encoding.Unicode, JsonConvert.SerializeObject(model)),
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri("/api/Subscribe")
             };

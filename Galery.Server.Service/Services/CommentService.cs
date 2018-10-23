@@ -45,7 +45,7 @@ namespace Galery.Server.Service.Services
                 {
                     connection.ConnectionString = _connectionString;
                     await connection.OpenAsync();
-                    var pic = uow.Pictures.FindByIdAsync(connection, model.PictureId);
+                    var pic = await uow.Pictures.FindByIdAsync(connection, model.PictureId);
                     if (pic == null)
                         operRes.AddErrorMessage("PictureId", $"Не удалось найти картину с id = {model.PictureId}");
 

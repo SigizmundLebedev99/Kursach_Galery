@@ -28,28 +28,28 @@
                     VerticalAlignment="Center"
                     Foreground="#FF673AB7"/>
         </DockPanel>
-        <StackPanel MinWidth="500" DataContext="{Binding Picture}" Visibility="{Binding ElementName=pictureInfo, Path=DataContext.CommonVis}">
+        <StackPanel MinWidth="500" Visibility="{Binding CommonVis}">
             <materialDesign:Card Margin="5" MaxWidth="700" Background="#FF673AB7">
                 <StackPanel HorizontalAlignment="Center">
 
-                    <Image Source="{Binding ImagePath, Converter={StaticResource imagePathConverter}}" Margin="5"  
+                    <Image Source="{Binding Picture.ImagePath, Converter={StaticResource imagePathConverter}}" Margin="5"  
                                Stretch="Uniform"
                                />
                     <DockPanel HorizontalAlignment="Stretch">
                         <materialDesign:Chip 
                             DockPanel.Dock="Left"
-                            Command="{Binding ElementName=pictureInfo, Path=DataContext.CommonVM.SelectUser}" 
-                            CommandParameter="{Binding UserId}"
+                            Command="{Binding CommonVM.SelectUser}" 
+                            CommandParameter="{Binding Picture.UserId}"
                             Margin="10" 
                             MinWidth="30" 
-                            Content="{Binding UserName}" Height="Auto" 
+                            Content="{Binding Picture.UserName}" Height="Auto" 
                             Background="White">
                             <materialDesign:Chip.Icon>
-                                <Image Source="{Binding Avatar, Converter={StaticResource imagePathConverter}}" Stretch="UniformToFill">
+                                <Image Source="{Binding Picture.Avatar, Converter={StaticResource imagePathConverter}}" Stretch="UniformToFill">
                                 </Image>
                             </materialDesign:Chip.Icon>
                         </materialDesign:Chip>
-                        <TextBlock Text="{Binding DateOfCreation, Converter={StaticResource dateConverter}}" 
+                        <TextBlock Text="{Binding Picture.DateOfCreation, Converter={StaticResource dateConverter}}" 
                                    Foreground="White"
                                    DockPanel.Dock="Right" 
                                    VerticalAlignment="Center" 
@@ -62,14 +62,14 @@
             <Expander MaxWidth="500" MinWidth="150"
                 HorizontalAlignment="Left"
                 Header="Описание:">
-                <TextBlock Text="{Binding Description}" Margin="20 0 20 5"
+                <TextBlock Text="{Binding Picture.Description}" Margin="20 0 20 5"
                         Opacity=".68"
                         TextWrapping="Wrap" />
             </Expander>
 
             <StackPanel Margin="15">
                 <TextBlock Text="Жанры: " FontSize="16" Margin="11 0"/>
-                <ItemsControl ItemsSource="{Binding Tags}">
+                <ItemsControl ItemsSource="{Binding Picture.Tags}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel/>
@@ -83,15 +83,15 @@
                 </ItemsControl>
             </StackPanel>
 
-            <StackPanel Margin="15" HorizontalAlignment="Center" Visibility="{Binding ElementName=pictureInfo, Path=DataContext.CommentPad}">
+            <StackPanel Margin="15" HorizontalAlignment="Center" Visibility="{Binding CommentPad}">
                 <StackPanel Orientation="Horizontal">
                     <TextBox MinWidth="300" MaxWidth="500"
                             Margin="15"
                             Height="70"
                             AcceptsReturn="True"
                             TextWrapping="Wrap"
-                            VerticalScrollBarVisibility="Auto" Text="{Binding ElementName=pictureInfo, Path=DataContext.Model.Text}"/>
-                    <Button Padding="3" Command="{Binding ElementName=pictureInfo, Path=DataContext.CreateComment}">
+                            VerticalScrollBarVisibility="Auto" Text="{Binding CommentText}"/>
+                    <Button Padding="3" Command="{Binding CreateComment}">
                         <StackPanel Orientation="Horizontal" Margin="3">
                             <materialDesign:PackIcon Kind="MessagePlus" Height="25" Width="25" Margin="0 0 5 0"/>
                             <TextBlock Text="Комментировать" FontSize="12" FontWeight="Normal" VerticalAlignment="Center"/>

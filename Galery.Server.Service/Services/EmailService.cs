@@ -24,7 +24,7 @@ namespace Galery.Server.Service.Services
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("Администрация сайта", _from));
+            emailMessage.From.Add(new MailboxAddress("Администрация Galery", _from));
             emailMessage.To.Add(new MailboxAddress("", email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)

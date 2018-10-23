@@ -74,7 +74,7 @@ namespace Galery.VM
                     {
                         Height = 160,
                         Width = 160,
-                        Stretch = Stretch.UniformToFill,
+                        Stretch = Stretch.Uniform,
                         Source = (ImageSource)new ImageSourceConverter().ConvertFromString(App.ServerAdress + User.Avatar)
                     };
             }
@@ -110,8 +110,6 @@ namespace Galery.VM
                 OnPropertyChanged("LoadingVizibility");
                 OnPropertyChanged("IconContent");
             }
-        }
-
-        
+        } 
     }
 }

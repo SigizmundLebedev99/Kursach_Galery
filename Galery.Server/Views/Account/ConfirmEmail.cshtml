@@ -1,6 +1,7 @@
-﻿ 
+﻿@model Galery.Server.DAL.Models.User
+
 @{
-    Layout = null;
+	Layout = null;
 }
 
 <!DOCTYPE html>
@@ -11,17 +12,46 @@
 	<title>Confirm email</title>
 	<style>
 		* {
-			background-color: thistle
+			margin: 0%;
 		}
 
-		p {
-			margin: 100px auto;
-			font-family: sans-serif;
-			color: brown;
+		header {
+			background: rgb(103, 58, 183);
+			color: white;
+			vertical-align: -webkit-baseline-middle;
+			padding: 10px;
+			font-size: 16pt;
+		}
+
+			header h2 {
+				margin: 0 auto;
+				width: 100px;
+			}
+
+		.userdata {
+			margin: 30px;
+			text-align: center;
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+		}
+
+		section {
+			font-family: Verdana, Geneva, Tahoma, sans-serif;
+			color: rgb(103, 58, 183);
+			margin: 20px;
+			text-align: center;
 		}
 	</style>
 </head>
 <body>
-	<p>Адрес элетронной почты подтвержден ...</p>
+	<header>
+		<h2>
+			Galery
+		</h2>
+	</header>
+	<div class="userdata">
+		<p><strong>Имя пользователя:</strong> @Model.UserName</p>
+		<p><strong>Email:</strong> @Model.Email</p>
+	</div>
+	<section>Ваш электронный адрес успешно подтвержден...</section>
 </body>
 </html>

@@ -3,6 +3,7 @@ using Galery.Server.Service.DTO.PictureDTO;
 using Galery.VM.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -20,6 +21,8 @@ namespace Galery.VM
 
         public PictureFullInfoDTO Picture { get; private set; }
         public string CommentText { get; set; }
+
+        public ObservableCollection<CommentInfoDTO> CommentList { get; private set; }
 
         int userId;
         int pictureId;
@@ -49,11 +52,13 @@ namespace Galery.VM
                     var res = await App.ClientService.Comment.CreateComment(new CreateCommentDTO
                     {
                         PictureId =pictureId,
-                        Text = this.CommentText});
+                        Text = this.CommentText,
+                        UserId = userId});
+
                     if (res.IsSuccessStatusCode)
                     {
                         var comment = await res.Content.ReadAsAsync<CommentInfoDTO>();
-                        
+                        CommentList.Add(comment);
                     }
                     else
                     {
@@ -69,6 +74,8 @@ namespace Galery.VM
             if (res.IsSuccessStatusCode)
             {
                 Picture = await res.Content.ReadAsAsync<PictureFullInfoDTO>();
+                CommentList = new ObservableCollection<CommentInfoDTO>(Picture.CommentList);
+                OnPropertyChanged("CommentList");
                 OnPropertyChanged("Picture");
                 CommonLoading = Visibility.Collapsed;
                 OnPropertyChanged("CommonLoading");
