@@ -97,6 +97,9 @@
     <Compile Include="Pages\Registration.xaml.cs">
       <DependentUpon>Registration.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pages\TagList.xaml.cs">
+      <DependentUpon>TagList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pages\TopPictures.xaml.cs">
       <DependentUpon>TopPictures.xaml</DependentUpon>
     </Compile>
@@ -135,6 +138,7 @@
     <Compile Include="VM\MainVM.cs" />
     <Compile Include="VM\PictureVM.cs" />
     <Compile Include="VM\RegistrationVM.cs" />
+    <Compile Include="VM\TagListVM.cs" />
     <Compile Include="VM\TopPicturesVM.cs" />
     <Compile Include="VM\UserInfoVM.cs" />
     <Compile Include="VM\UserPicturesListVM.cs" />
@@ -177,6 +181,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Pages\Registration.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\TagList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

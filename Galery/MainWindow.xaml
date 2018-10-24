@@ -11,7 +11,7 @@
     <Window.DataContext>
         <vm:MainVM/>
     </Window.DataContext>
-    <materialDesign:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
+    <materialDesign:DialogHost Identifier="RootDialog">
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <DockPanel MinWidth="264">
@@ -127,7 +127,7 @@
                             </Grid>
                         </materialDesign:Flipper.BackContent>
                     </materialDesign:Flipper>
-                    <ListBox x:Name="DemoItemsListBox" Margin="0 16 0 16" SelectedIndex="0"                         
+                    <ListBox Margin="0 16 0 16" SelectedIndex="0"                         
                                  ItemsSource="{Binding MenuItems}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -151,14 +151,11 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <ScrollViewer Grid.Row="1" 
+                    <ScrollViewer Grid.Row="1" x:Name="MainScrollViewer"
                                       HorizontalScrollBarVisibility="{Binding Content.HorizontalScrollBarVisibilityRequirement}"
                                       VerticalScrollBarVisibility="{Binding Content.VerticalScrollBarVisibilityRequirement}">
                         <ContentControl Content="{Binding Content}" />
                     </ScrollViewer>
-
-                    <materialDesign:Snackbar MessageQueue="{materialDesign:MessageQueue}" x:Name="MainSnackbar"
-                                                Grid.Row="1" />
                 </Grid>
             </DockPanel>
         </materialDesign:DrawerHost>

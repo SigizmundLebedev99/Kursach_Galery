@@ -26,7 +26,7 @@ namespace Galery
         {
             InitializeComponent();
             MainVm = (MainVM)this.DataContext;
-            MainVm.SetPassFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);
+            MainVm.SetPassFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);           
         }
 
         private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)

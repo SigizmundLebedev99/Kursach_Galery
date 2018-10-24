@@ -24,17 +24,14 @@ namespace Galery.VM
 
         public event Action<Picture> PictureCreated;
 
-        private event Action onLoad;
-
         private List<int> selectedIds = new List<int>();
 
         public object Content { get; private set; }
 
         public CreatePictureVM(int userId, MainVM main) : base(main)
         {
-            onLoad += async () => await LoadData();
             Model = new CreatePictureDTO { UserId = userId };
-            onLoad();
+            LoadData();
         }
 
         private async Task LoadData()

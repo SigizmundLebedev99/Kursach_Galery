@@ -11,11 +11,9 @@ namespace Galery.VM
 {
     class TopPicturesVM : BaseWithCommonVM
     {
-        private event Action OnLoaded;
         public TopPicturesVM(MainVM mainVM) : base(mainVM)
         {
-            OnLoaded += async () => await LoadData();
-            OnLoaded();
+            LoadData();
         }
 
         public Visibility LoadingVizibility { get; private set; } = Visibility.Visible;

@@ -18,11 +18,8 @@ namespace Galery.VM
 {
     class UserInfoVM : BasePageVM
     {
-        event Action onLoad;
-
         public UserInfoVM(MainVM mainVM, int userId, Roles role) : base(mainVM)
         {
-            onLoad += async () => await LoadData(userId, role);
             if (role == Roles.Unauthorized)
             {
                 SubscribeVisibility = Visibility.Collapsed;
@@ -47,7 +44,7 @@ namespace Galery.VM
                     new MenuItem("Подписчики", ()=>new UserList(), ()=>new SubscribersVM(userId, mainVM)),
                     new MenuItem("Подписки", ()=> new UserList(), ()=>new SubscribesVM(userId, mainVM))
                 };
-            onLoad();
+            LoadData(userId, role);
         }
 
         public MenuItem[] MenuItems { get; set; }

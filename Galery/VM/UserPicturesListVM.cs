@@ -16,19 +16,15 @@ namespace Galery.VM
 
         public List<Picture> Pictures { get; private set; }
 
-        private int userId;
-        private event Action onLoad;
-
         public UserPicturesListVM(int userId, MainVM mainVM) : base(mainVM) 
         {
-            this.userId = userId;
-            onLoad += async () => await LoadData();
+            
             LoadingVizibility = Visibility.Visible;
             OnPropertyChanged("LoadingVizibility");
-            onLoad();
+            LoadData(userId);
         }
 
-        public async Task LoadData()
+        public async Task LoadData(int userId)
         {
             var res = await App.ClientService.Picture.GetByUser(userId, 0, 200);
             if (res.IsSuccessStatusCode)

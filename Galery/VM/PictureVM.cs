@@ -26,11 +26,10 @@ namespace Galery.VM
 
         int userId;
         int pictureId;
-        private event Action<int, Roles> onLoad;
+
 
         public PictureVM(MainVM mainVm, int pictureId, Roles role) : base(mainVm)
         {
-            onLoad += async (i,r) => await LoadData(i,r);
             this.pictureId = pictureId;
             if(role == Roles.Unauthorized)
             {
@@ -40,7 +39,7 @@ namespace Galery.VM
             {
                 userId = App.User.UserId;
             }
-            onLoad(pictureId, role);
+            LoadData(pictureId, role);
         }
 
         public ICommand CreateComment
@@ -64,7 +63,7 @@ namespace Galery.VM
                     {
                         await App.ShowErrorMessage("Не удалось добавить комментарий\n" + res.ReasonPhrase);
                     }
-                });
+                },(obj)=>!string.IsNullOrEmpty(CommentText));
             }
         }
 
