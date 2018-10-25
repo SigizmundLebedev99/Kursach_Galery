@@ -29,9 +29,9 @@ namespace Galery
             MainVm.SetPassFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);           
         }
 
-        private void TextBlock_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var content = (Galery.VM.MenuItem)((TextBlock)sender).DataContext;
+            var content = (VM.MenuItem)MenuListBox.SelectedItem;
             MainVm.Content = content.GetContent;
         }
     }
