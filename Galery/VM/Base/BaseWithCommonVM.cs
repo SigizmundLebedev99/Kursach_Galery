@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Galery.VM
 {
-    class BaseWithCommonVM : BaseVM
+    abstract class BaseWithCommonVM : BaseVM
     {
         public CommonVM CommonVM { get; }
 

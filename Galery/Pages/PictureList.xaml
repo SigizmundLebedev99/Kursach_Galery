@@ -25,7 +25,7 @@
                 Foreground="#FF673AB7"/>
             <resources:Loading Width="120" HorizontalAlignment="Right" Visibility="{Binding LoadingVisibility}"/>
         </DockPanel>
-        <ItemsControl ItemsSource="{Binding PicturesList}">
+        <ItemsControl ItemsSource="{Binding PicturesList, NotifyOnSourceUpdated=True}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel/>

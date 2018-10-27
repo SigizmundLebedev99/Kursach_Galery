@@ -15,15 +15,12 @@ namespace Galery.VM
 
         public List<UserDTO> Users { get; set; }
 
-        private event Action<int> onLoad;
-
         public SubscribesVM(int userId, MainVM mainVM) : base(mainVM)
         {
-            onLoad += async (id) => await LoadData(id);
-            onLoad(userId);
+            LoadData(userId);
         }
 
-        private async Task LoadData(int userId)
+        private async void LoadData(int userId)
         {
             var res = await App.ClientService.Subscribe.GetSubscribes(userId);
             if (res.IsSuccessStatusCode)

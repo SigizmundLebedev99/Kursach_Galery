@@ -32,10 +32,10 @@ namespace Galery.Server.DAL.Repository
             return connection.ExecuteAsync(UpdateQuery(entity), entity);
         }
 
-        public Task<IEnumerable<Tag>> GetTagsForPicture(DbConnection connection, int pictureId)
+        public Task<IEnumerable<Tag>> GetTagsForPicture(DbConnection connection, int id)
         {
-            string query = m2mJoinQuery<Tag, PictureTag>(e => e.Id, e => e.TagId, e => e.PictureId, "pictureId");
-            return connection.QueryAsync<Tag>(query, new { pictureId}); 
+            string query = m2mJoinQuery<Tag, PictureTag>(e => e.Id, e => e.TagId, e => e.PictureId, nameof(id));
+            return connection.QueryAsync<Tag>(query, new { id}); 
         }
     }
 }

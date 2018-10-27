@@ -8,13 +8,13 @@ using System.Windows.Input;
 
 namespace Galery.VM
 {
-    class BasePageVM : BaseWithCommonVM
+    abstract class BasePageVM : BaseWithCommonVM
     {
         public BasePageVM(MainVM mainVM) : base(mainVM)
         {
             MainVM = mainVM;
             previousContent = MainVM.Content;
-            previousContext = previousContent.DataContext;
+            previousContext = previousContent?.DataContext;
         }
 
         protected MainVM MainVM;

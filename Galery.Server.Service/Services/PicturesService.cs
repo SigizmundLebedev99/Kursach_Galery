@@ -293,8 +293,9 @@ namespace Galery.Server.Services
                             $"WHERE {nameof(PictureLikes.UserId)} = @{nameof(userId)} AND {nameof(PictureLikes.PictureId)} = @{nameof(pictureId)}",
                             new { userId, pictureId });
                     }
+                    else
+                        throw new NotFoundException($"Не удалось найти лайк пользователя с id = {userId} для картины {pictureId}");
                 }
-                throw new NotFoundException($"Не удалось найти лайк пользователя с id = {userId} для картины {pictureId}");
             }
             catch(NotFoundException ex)
             {

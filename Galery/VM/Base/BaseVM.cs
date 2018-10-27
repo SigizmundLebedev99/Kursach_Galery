@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Galery.VM
 {
-    class BaseVM : INotifyPropertyChanged
+    abstract class BaseVM : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

@@ -32,7 +32,7 @@ namespace Galery.Server.Controllers
         public async Task<IActionResult> Subscribing([FromBody]Subscribe model)
         {
             var res = await _subscribeService.Subscribing(model);
-            return GetResult(res, true);
+            return this.GetResult(res, true);
         }
 
         [HttpDelete]
@@ -54,24 +54,6 @@ namespace Galery.Server.Controllers
         {
             var res = await _subscribeService.GetSubscribers(userId);
             return Ok(res);
-        }
-
-        private ActionResult GetResult<T>(OperationResult<T> operRes, bool isSingle)
-        {
-            if (operRes.Succeeded)
-            {
-                if (!isSingle)
-                    return Ok(operRes.Results);
-                else
-                    return Ok(operRes.Results.First());
-            }
-            {
-                foreach (var e in operRes.ErrorMessages)
-                {
-                    ModelState.AddModelError(e.Property, e.Message);
-                }
-                return BadRequest(ModelState);
-            }
         }
     }
 }

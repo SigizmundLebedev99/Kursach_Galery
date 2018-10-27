@@ -19,11 +19,10 @@ namespace Galery.VM
 
         public SubscribersVM(int userId, MainVM mainVM) : base(mainVM)
         {
-            onLoad += async(id)=>await LoadData(id);
-            onLoad(userId);
+            LoadData(userId);
         }
 
-        private async Task LoadData(int userId)
+        async void LoadData(int userId)
         {
             var res = await App.ClientService.Subscribe.GetSubscribers(userId);
             if (res.IsSuccessStatusCode)

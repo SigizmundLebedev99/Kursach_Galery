@@ -9,7 +9,6 @@ using Galery.Server.Service.Infrostructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Galery.Server.Controllers
@@ -36,7 +35,7 @@ namespace Galery.Server.Controllers
         public async Task<IActionResult> CreatePicture([FromBody]CreatePictureDTO model)
         {
             var result = await _service.CreatePictureAsync(model);
-            return GetResult(result, true);
+            return this.GetResult(result, true);
         }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace Galery.Server.Controllers
         public async Task<IActionResult> UpdatePicture(int id, [FromBody]CreatePictureDTO model)
         {
             var result = await _service.UpdatePictureAsync(id, model);
-            return GetResult(result, true);
+            return this.GetResult(result, true);
         }
 
         /// <summary>
@@ -67,9 +66,9 @@ namespace Galery.Server.Controllers
         [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureById(int id)
         {
-            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
+            var userId = User.GetUserId();
             var res = await _service.GetPictureByIdAsync(id, userId);
-            return GetResult(res, true);
+            return this.GetResult(res, true);
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace Galery.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
         public async Task<IActionResult> GetLikedByUser([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
-            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
+           var userId = User.GetUserId();
             var res = await _service.GetLikedByUserAsync(userId, skip, take);
             return Ok(res);
         }
@@ -128,7 +127,7 @@ namespace Galery.Server.Controllers
         public async Task<IActionResult> SetLike(int pictureId)
         {
             //var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
+           var userId = User.GetUserId();
             await _service.SetLikeAsync(userId, pictureId);
             return Ok();
         }
@@ -139,7 +138,7 @@ namespace Galery.Server.Controllers
         [HttpDelete("like/{pictureId}")]
         public async Task<IActionResult> RemoveLikeAsync(int pictureId)
         {
-            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
+           var userId = User.GetUserId();
             await _service.RemoveLikeAsync(userId, pictureId);
             return Ok();
         }
@@ -168,28 +167,9 @@ namespace Galery.Server.Controllers
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
         public async Task<IActionResult> GetNewPicturesFromSubscribes([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
-            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
+           var userId = User.GetUserId();
             var res = await _service.GetPicsFromSubscribes(userId, skip, take);
             return Ok(res);
-        }
-
-
-        private ActionResult GetResult<T>(OperationResult<T> operRes, bool isSingle)
-        {
-            if (operRes.Succeeded)
-            {
-                if (!isSingle)
-                    return Ok(operRes.Results);
-                else
-                    return Ok(operRes.Results.First());
-            }
-            {
-                foreach (var e in operRes.ErrorMessages)
-                {
-                    ModelState.AddModelError(e.Property, e.Message);
-                }
-                return BadRequest(ModelState);
-            }
-        }
+        }        
     }
 }

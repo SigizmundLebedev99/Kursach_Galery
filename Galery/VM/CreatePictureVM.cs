@@ -34,7 +34,7 @@ namespace Galery.VM
             LoadData();
         }
 
-        private async Task LoadData()
+        async void LoadData()
         {
             var res = await App.ClientService.Tag.GetAllTags();
             if (res.IsSuccessStatusCode)

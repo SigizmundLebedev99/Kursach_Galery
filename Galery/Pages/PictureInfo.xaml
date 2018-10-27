@@ -8,8 +8,7 @@
              mc:Ignorable="d" 
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:resources="clr-namespace:Galery.Resources"
-             xmlns:vm="clr-namespace:Galery.VM"
-             xmlns:models="clr-namespace:Galery.Server.DAL.Models;assembly=Galery.Common">
+             xmlns:vm="clr-namespace:Galery.VM">
     <UserControl.Resources>
         <vm:ImagePathConverter x:Key="imagePathConverter" />
         <vm:DateConverter x:Key="dateConverter"/>
@@ -36,18 +35,19 @@
                     <Image Source="{Binding Picture.ImagePath, Converter={StaticResource imagePathConverter}}" Margin="5"  
                                Stretch="Uniform"
                                />
-                    <StackPanel Orientation="Horizontal">
-                        <ToggleButton Margin="5"
-                          Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+                    <StackPanel Orientation="Horizontal" DataContext="{Binding LikeVM}">
+                        <Button Margin="5"
+                          Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                           ToolTip="Лойсы"
-                          IsChecked="{Binding IsLiked, Mode=OneWay}"
+                          Foreground="{Binding ButtonColor}"
+                          Background="Transparent"
                           Command="{Binding LikeSwitch}"
                           IsEnabled="{Binding IsLikeEnabled}">
                           <materialDesign:PackIcon
                             Kind="Heart"
                             Height="21"
                             Width="21"/>           
-                        </ToggleButton>
+                        </Button>
                         <TextBlock Text="{Binding Likes}" VerticalAlignment="Center" Foreground="White"/>
                     </StackPanel>
                     <DockPanel HorizontalAlignment="Stretch">

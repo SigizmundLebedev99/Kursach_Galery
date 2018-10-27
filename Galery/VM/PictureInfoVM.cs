@@ -15,19 +15,16 @@ namespace Galery.VM
 {
     class PictureInfoVM : BasePageVM
     {
-        private bool isLikeEnabled;
-        private bool isLiked;
-        private int likes;
-
         public Visibility CommonLoading { get; private set; } = Visibility.Visible;
         public Visibility CommonVis { get; private set; } = Visibility.Collapsed;
         public Visibility CommentPad { get; private set; } = Visibility.Visible;
-        public bool IsLikeEnabled { get => isLikeEnabled; private set { isLikeEnabled = value; OnPropertyChanged(); } }
-
+        
         public PictureFullInfoDTO Picture { get; private set; }
-        public int Likes { get => likes; private set { likes = value; OnPropertyChanged(); } }
         public string CommentText { get; set; }
-        public bool IsLiked { get => isLiked; private set { isLiked = value; OnPropertyChanged(); } }
+
+        private LikeVM likeVM;
+        public LikeVM LikeVM { get => likeVM;private set { likeVM = value;OnPropertyChanged(); } }
+
         public ObservableCollection<CommentInfoDTO> CommentList { get; private set; }
 
         int userId;
@@ -72,50 +69,17 @@ namespace Galery.VM
             }
         }
 
-        public ICommand LikeSwitch
-        {
-            get
-            {
-                return new DelegateCommand(async obj => 
-                {
-                    IsLikeEnabled = false;
-                    HttpResponseMessage res = null;
-                    if (isLiked)
-                    {
-                        res = await App.ClientService.Picture.RemoveLike(pictureId);
-                        if (res.IsSuccessStatusCode)
-                        {
-                            isLiked = false;
-                            Likes = Likes - 1;
-                        }
-                    }
-                    else
-                    {
-                        res = await App.ClientService.Picture.SetLike(pictureId);
-                        if (res.IsSuccessStatusCode)
-                        {
-                            isLiked = true;
-                            Likes = Likes + 1;
-                        }
-                    }
-                    IsLikeEnabled = true;
-                });
-            }
-        }
-
         private async Task LoadData(int pictureId, Roles role)
         {
             HttpResponseMessage res = null;
 
             if (role == Roles.Unauthorized)
             {
-                res = await App.ClientService.Picture.GetPictureByIdAnon(pictureId);
-                IsLikeEnabled = false;
+                res = await App.ClientService.Picture.GetPictureByIdAnon(pictureId);               
             }
             else
             {
-                res = await App.ClientService.Picture.GetPictureById(pictureId);
-                IsLikeEnabled = true;
+                res = await App.ClientService.Picture.GetPictureById(pictureId);     
             }
 
             if (res.IsSuccessStatusCode)
@@ -128,8 +92,8 @@ namespace Galery.VM
                 OnPropertyChanged("CommonLoading");
                 CommonVis = Visibility.Visible;
                 OnPropertyChanged("CommonVis");
-                IsLiked = Picture.IsLiked;
-                Likes = Picture.Likes;
+                LikeVM = role == Roles.Authorized ? new LikeVM(Picture.IsLiked, Picture.Likes, pictureId) :
+                new LikeVM(Picture.Likes);
             }
             else
             {

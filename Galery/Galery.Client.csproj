@@ -120,6 +120,7 @@
       <DependentUpon>UserPicturesList.xaml</DependentUpon>
     </Compile>
     <Compile Include="VM\Base\BasePageVM.cs" />
+    <Compile Include="VM\Base\BasePictureListVM.cs" />
     <Compile Include="VM\Base\BaseVM.cs" />
     <Compile Include="VM\Base\BaseWithCommonVM.cs" />
     <Compile Include="VM\CommonVM.cs" />
@@ -129,6 +130,8 @@
     <Compile Include="VM\Helpers\DelegateCommand.cs" />
     <Compile Include="VM\Helpers\ImagePathConverter.cs" />
     <Compile Include="VM\Helpers\MenuItem.cs" />
+    <Compile Include="VM\LikedPictureListVM.cs" />
+    <Compile Include="VM\LikeVM.cs" />
     <Compile Include="VM\PictureListForTagVM.cs" />
     <Compile Include="VM\SubscribersVM.cs" />
     <Compile Include="VM\SubscribesVM.cs" />

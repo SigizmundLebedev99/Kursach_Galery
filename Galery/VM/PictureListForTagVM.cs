@@ -10,20 +10,17 @@ using System.Windows;
 
 namespace Galery.VM
 {
-    class PictureListForTagVM : BasePageVM
+    class PictureListForTagVM : BasePictureListVM
     {
-        public List<PictureInfoDTO> PicturesList { get; private set; }
-
-        public Visibility LoadingVisibility { get; private set; } = Visibility.Visible;
-
-        public string Header { get; private set; }
 
         public PictureListForTagVM(MainVM mainVM, Tag tag) : base(mainVM)
         {
+            Header = tag.Name;
+            OnPropertyChanged("Header");
             LoadData(tag.Id);
         }
 
-        async Task LoadData(int tagId)
+        async void LoadData(int tagId)
         {
             var res = await App.ClientService.Picture.GetPicturesByTag(tagId, 0, 200);
             if (res.IsSuccessStatusCode)

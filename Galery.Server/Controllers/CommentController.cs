@@ -27,7 +27,7 @@ namespace Galery.Server.Controllers
         public async Task<IActionResult> CreateComment([FromBody]CreateCommentDTO model)
         {
             var res = await _service.CreateCommentAsync(model);
-            return GetResult(res, true);
+            return this.GetResult(res, true);
         }
 
         [HttpDelete("{id}")]
@@ -35,24 +35,6 @@ namespace Galery.Server.Controllers
         {
             await _service.DeleteCommentAsync(id);
             return Ok();
-        }
-
-        private ActionResult GetResult<T>(OperationResult<T> operRes, bool isSingle)
-        {
-            if (operRes.Succeeded)
-            {
-                if (!isSingle)
-                    return Ok(operRes.Results);
-                else
-                    return Ok(operRes.Results.First());
-            }
-            {
-                foreach (var e in operRes.ErrorMessages)
-                {
-                    ModelState.AddModelError(e.Property, e.Message);
-                }
-                return BadRequest(ModelState);
-            }
         }
     }
 }

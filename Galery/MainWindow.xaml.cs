@@ -34,7 +34,7 @@ namespace Galery
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var content = (VM.MenuItem)MenuListBox.SelectedItem;
-            MainVm.Content = content.GetContent;
+            MainVm.Content = content?.GetContent;
         }
     }
 }

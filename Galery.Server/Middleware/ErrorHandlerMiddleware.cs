@@ -49,7 +49,7 @@ namespace Galery.Server.Middleware
             {
                 mes.Message = nfe.Message;
                 reasonPhrase = "NotFoundException";
-                code = HttpStatusCode.NotFound;
+                code = HttpStatusCode.Conflict;
             }
             else if (exception is DatabaseException dbe)
             {
