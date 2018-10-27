@@ -153,9 +153,10 @@
                     </ListBox>
                 </DockPanel>
             </Expander>
-            <ScrollViewer Grid.Row="1" x:Name="MainScrollViewer"
-                                HorizontalScrollBarVisibility="{Binding Content.HorizontalScrollBarVisibilityRequirement}"
-                                VerticalScrollBarVisibility="{Binding Content.VerticalScrollBarVisibilityRequirement}">
+            <ScrollViewer                
+                Grid.Row="1" x:Name="MainScrollViewer"
+                HorizontalScrollBarVisibility="{Binding Content.HorizontalScrollBarVisibilityRequirement}"
+                VerticalScrollBarVisibility="{Binding Content.VerticalScrollBarVisibilityRequirement}">
                 <ContentControl Content="{Binding Content}" />
             </ScrollViewer>
         </DockPanel>

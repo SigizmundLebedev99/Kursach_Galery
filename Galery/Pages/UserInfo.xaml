@@ -70,6 +70,6 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <ContentControl Grid.Row="1" Content="{Binding ElementName=SubMenu, Path=SelectedItem.GetContent}"/>
+        <ContentControl Grid.Row="1" Content="{Binding ElementName=SubMenu, Path=SelectedItem.GetContent, UpdateSourceTrigger=PropertyChanged}"/>
     </StackPanel>
 </UserControl>

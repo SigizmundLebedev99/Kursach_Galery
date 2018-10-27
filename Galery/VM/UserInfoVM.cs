@@ -61,16 +61,12 @@ namespace Galery.VM
                     return new PackIcon()
                     {
                         Kind = PackIconKind.AccountBox,
-                        Height = 160,
-                        Width = 160,
                         VerticalAlignment = VerticalAlignment.Center,
                         HorizontalAlignment = HorizontalAlignment.Center
                     };
                 else
                     return new Image
                     {
-                        Height = 160,
-                        Width = 160,
                         Stretch = Stretch.Uniform,
                         Source = (ImageSource)new ImageSourceConverter().ConvertFromString(App.ServerAdress + User.Avatar)
                     };
@@ -106,6 +102,10 @@ namespace Galery.VM
                 LoadingVizibility = Visibility.Collapsed;
                 OnPropertyChanged("LoadingVizibility");
                 OnPropertyChanged("IconContent");
+            }
+            else
+            {
+                await App.ShowErrorMessage("Что-то пошло не так\n" + res.ReasonPhrase);
             }
         } 
     }

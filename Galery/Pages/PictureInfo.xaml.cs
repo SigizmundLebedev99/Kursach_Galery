@@ -20,12 +20,17 @@ namespace Galery.Pages
     /// <summary>
     /// Логика взаимодействия для Picture.xaml
     /// </summary>
-    public partial class Picture : UserControl
+    public partial class PictureInfo : UserControl
     {
-        internal Picture(MainVM mainVM, int pictureId, Roles role)
+        internal PictureInfo()
+        {
+            InitializeComponent();
+        }
+
+        internal PictureInfo(MainVM mainVM, int pictureId, Roles role)
         { 
             InitializeComponent();
-            this.DataContext = new PictureVM(mainVM, pictureId, role);
+            this.DataContext = new PictureInfoVM(mainVM, pictureId, role);
         }
     }
 }

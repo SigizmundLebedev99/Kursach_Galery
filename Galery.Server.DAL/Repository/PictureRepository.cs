@@ -44,14 +44,14 @@ namespace Galery.Server.DAL.Repository
             return entity;
         }
 
-        public async Task DeleteAsync(DbConnection connection, int id)
+        public Task DeleteAsync(DbConnection connection, int id)
         {   
-            await connection.ExecuteAsync($"DELETE FROM [{nameof(Picture)}] WHERE [Id] = @{nameof(id)}", new { id });
+            return connection.ExecuteAsync($"DELETE FROM [{nameof(Picture)}] WHERE [Id] = @{nameof(id)}", new { id });
         }
 
-        public async Task<Picture> FindByIdAsync(DbConnection connection, int id)
+        public Task<Picture> FindByIdAsync(DbConnection connection, int id)
         {            
-            return await connection.QueryFirstOrDefaultAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.Id)}] = @{nameof(id)}", new { id });        
+            return connection.QueryFirstOrDefaultAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.Id)}] = @{nameof(id)}", new { id });        
         }
 
         public async Task UpdateAsync(DbConnection connection, Picture entity, IEnumerable<int> tagIds)
@@ -81,46 +81,46 @@ namespace Galery.Server.DAL.Repository
             }
         }
 
-        public async Task<IEnumerable<Picture>> GetByAuthorAsync(DbConnection connection, int authorId, int? skip, int? take)
+        public Task<IEnumerable<Picture>> GetByAuthorAsync(DbConnection connection, int authorId, int? skip, int? take)
         {
-                return await connection.QueryAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.UserId)}] = @{nameof(authorId)} "
+                return connection.QueryAsync<Picture>($"SELECT * FROM [{nameof(Picture)}] WHERE [{nameof(Picture.UserId)}] = @{nameof(authorId)} "
                     + TakeSkipQuery<Picture>(p=>p.Id, skip, take), new { authorId });
         }
 
-        public async Task<IEnumerable<Picture>> GetLikedByUserAsync(DbConnection connection, int userId, int? skip, int? take)
+        public Task<IEnumerable<Picture>> GetLikedByUserAsync(DbConnection connection, int userId, int? skip, int? take)
         {
-                return await connection.QueryAsync<Picture>(
+                return connection.QueryAsync<Picture>(
                     m2mJoinQuery<Picture, PictureLikes>(
                         pic=>pic.Id, 
                         pl=>pl.PictureId, 
                         pl=>pl.UserId, 
-                        nameof(userId)) + TakeSkipQuery<Picture>(p=>p.Id, skip, take), 
+                        "userId") + TakeSkipQuery<Picture>(p=>p.Id, skip, take), 
                     new { userId });
         }
 
-        public async Task<int> GetLikesCount(DbConnection connection, int pictureId)
+        public Task<int> GetLikesCount(DbConnection connection, int pictureId)
         {
-            return await connection.QuerySingleAsync<int>(
+            return connection.QuerySingleAsync<int>(
                 $"select count([{nameof(PictureLikes.UserId)}]) " +
                 $"from [{nameof(PictureLikes)}] " +
                 $"where [{nameof(PictureLikes.PictureId)}] = @{nameof(pictureId)}",
                 new { pictureId });
         }
 
-        public async Task PushLike(DbConnection connection, PictureLikes like)
+        public Task PushLike(DbConnection connection, PictureLikes like)
         {
-            await connection.ExecuteAsync(CreateQuery(like), like);
+            return connection.ExecuteAsync(CreateQuery(like), like);
         }
 
-        public async Task<bool> IsLikeExist(DbConnection connection, PictureLikes like)
+        public Task<bool> IsLikeExist(DbConnection connection, PictureLikes like)
         {
-            return await connection.QuerySingleAsync<bool>($"select iif(@{nameof(like.UserId)} = any (select [{nameof(PictureLikes.UserId)}] " +
+            return connection.QuerySingleAsync<bool>($"select iif(@{nameof(like.UserId)} = any (select [{nameof(PictureLikes.UserId)}] " +
                 $"from [PictureLikes] where PictureId = @{nameof(like.PictureId)}),1,0)", like); 
         }
 
-        public async Task<int> PicturesCountAsync(DbConnection connection, int userId)
+        public Task<int> PicturesCountAsync(DbConnection connection, int userId)
         {
-            return await connection.QueryFirstAsync<int>($"select count([{nameof(Picture.Id)}]) from [{nameof(Picture)}] " +
+            return connection.QueryFirstAsync<int>($"select count([{nameof(Picture.Id)}]) from [{nameof(Picture)}] " +
                 $"where [{nameof(Picture.UserId)}] = @{nameof(userId)}",
                 new { userId });
         }

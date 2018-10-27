@@ -71,14 +71,14 @@ namespace Galery.ClientLogic.Concreate
             return _client.GetAsync($"/api/picture/top" + SkipTakeQuery(skip, take));
         }
 
-        public Task<HttpResponseMessage> RemoveLike(int userId, int pictureId)
+        public Task<HttpResponseMessage> RemoveLike(int pictureId)
         {
-            return _client.DeleteAsync($"/api/picture/like/{userId}/{pictureId}");
+            return _client.DeleteAsync($"/api/picture/like/{pictureId}");
         }
 
-        public Task<HttpResponseMessage> SetLike(int userId, int pictureId)
+        public Task<HttpResponseMessage> SetLike(int pictureId)
         {
-            return _client.PostAsync($"/api/picture/like/{userId}/{pictureId}", null);
+            return _client.PostAsync($"/api/picture/like/{pictureId}", null);
         }
 
         public Task<HttpResponseMessage> UpdatePicture(int id, CreatePictureDTO model)

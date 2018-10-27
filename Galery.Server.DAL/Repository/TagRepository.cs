@@ -17,24 +17,25 @@ namespace Galery.Server.DAL.Repository
             return entity;
         }
 
-        public async Task DeleteAsync(DbConnection connection, int id)
+        public Task DeleteAsync(DbConnection connection, int id)
         {
-            await connection.ExecuteAsync($"delete from [{nameof(Tag)}] where [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
+            return connection.ExecuteAsync($"delete from [{nameof(Tag)}] where [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task<Tag> FindByIdAsync(DbConnection connection, int id)
+        public Task<Tag> FindByIdAsync(DbConnection connection, int id)
         {     
-            return await connection.QueryFirstOrDefaultAsync<Tag>($"SELECT * FROM [{nameof(Tag)}] WHERE [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
+            return connection.QueryFirstOrDefaultAsync<Tag>($"SELECT * FROM [{nameof(Tag)}] WHERE [{nameof(Tag.Id)}] = @{nameof(id)}", new { id });
         }
 
-        public async Task UpdateAsync(DbConnection connection, Tag entity)
+        public Task UpdateAsync(DbConnection connection, Tag entity)
         {     
-            await connection.ExecuteAsync(UpdateQuery(entity), entity);
+            return connection.ExecuteAsync(UpdateQuery(entity), entity);
         }
 
-        public async Task<IEnumerable<Tag>> GetTagsForPicture(DbConnection connection, int pictureId)
+        public Task<IEnumerable<Tag>> GetTagsForPicture(DbConnection connection, int pictureId)
         {
-            return await connection.QueryAsync<Tag>(m2mJoinQuery<Tag, PictureTag>(e=>e.Id, e=>e.TagId, e=>e.PictureId, nameof(pictureId)), new { pictureId}); 
+            string query = m2mJoinQuery<Tag, PictureTag>(e => e.Id, e => e.TagId, e => e.PictureId, "pictureId");
+            return connection.QueryAsync<Tag>(query, new { pictureId}); 
         }
     }
 }

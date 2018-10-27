@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Galery.Server.Service.DTO.CommentDTO;
 using Galery.Server.Service.Infrostructure;
 using Galery.Server.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace Galery.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api/Comment")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class CommentController : Controller
     {
         readonly ICommentService _service;

@@ -26,9 +26,9 @@ namespace Galery.ClientLogic
 
         Task<HttpResponseMessage> GetTopPictures(int? skip, int? take);
 
-        Task<HttpResponseMessage> SetLike(int userId, int pictureId);
+        Task<HttpResponseMessage> SetLike(int pictureId);
 
-        Task<HttpResponseMessage> RemoveLike(int userId, int pictureId);
+        Task<HttpResponseMessage> RemoveLike(int pictureId);
 
         Task<HttpResponseMessage> GetPicturesByTag(int tagId, int? skip, int? take);
 

@@ -326,7 +326,7 @@ namespace Galery.Server.Services
             }
             catch (Exception ex)
             {
-                throw new DatabaseException("Не удалось удалить данные", ex.Message);
+                throw new DatabaseException("Не удалось добавить данные", ex.Message);
             }
         }
 

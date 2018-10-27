@@ -13,20 +13,24 @@ namespace Galery.VM
         public BasePageVM(MainVM mainVM) : base(mainVM)
         {
             MainVM = mainVM;
-            PreviousContent = MainVM.Content;
+            previousContent = MainVM.Content;
+            previousContext = previousContent.DataContext;
         }
 
         protected MainVM MainVM;
-        private object PreviousContent;
+        private FrameworkElement previousContent;
+        private object previousContext;
+
         public ICommand BackToPrevious
         {
             get
             {
                 return new DelegateCommand(obj =>
                 {
-                    MainVM.Content = PreviousContent;
+                    previousContent.DataContext = previousContext;
+                    MainVM.Content = previousContent;
                 }, 
-                obj=>PreviousContent != null);
+                obj=>previousContent != null);
             }
         }
     }

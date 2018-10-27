@@ -16,6 +16,7 @@ namespace Galery.Server.Controllers
 {
     [Produces("application/json")]
     [Route("api/picture")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class PictureController : Controller
     {
         readonly IPictureService _service;
@@ -66,7 +67,7 @@ namespace Galery.Server.Controllers
         [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureById(int id)
         {
-            var userId = Convert.ToInt32(_userManager.GetUserId(User));
+            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
             var res = await _service.GetPictureByIdAsync(id, userId);
             return GetResult(res, true);
         }
@@ -75,6 +76,7 @@ namespace Galery.Server.Controllers
         /// Get full info about picture by id for anon
         /// </summary>
         [HttpGet("anon/{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureByIdAnonimous(int id)
         {
@@ -87,8 +89,9 @@ namespace Galery.Server.Controllers
         /// </summary>
         [HttpGet("liked/{userId}")]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
-        public async Task<IActionResult> GetLikedByUser(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
+        public async Task<IActionResult> GetLikedByUser([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
+            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
             var res = await _service.GetLikedByUserAsync(userId, skip, take);
             return Ok(res);
         }
@@ -97,6 +100,7 @@ namespace Galery.Server.Controllers
         /// Get user's pictures
         /// </summary>
         [HttpGet("user/{userId}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<Picture>), 200)]
         public async Task<IActionResult> GetByUser(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
@@ -108,6 +112,7 @@ namespace Galery.Server.Controllers
         /// Get pictures with top likes count
         /// </summary>
         [HttpGet("top")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoWithFeedbackDTO>), 200)]
         public async Task<IActionResult> GetTopPictures([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
@@ -118,9 +123,12 @@ namespace Galery.Server.Controllers
         /// <summary>
         /// Create like by user to picture
         /// </summary>
-        [HttpPost("like/{userId}/{pictureId}")]
-        public async Task<IActionResult> SetLike(int userId, int pictureId)
+        
+        [HttpPost("like/{pictureId}")]
+        public async Task<IActionResult> SetLike(int pictureId)
         {
+            //var user = await _userManager.FindByNameAsync(User.Identity.Name);
+            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
             await _service.SetLikeAsync(userId, pictureId);
             return Ok();
         }
@@ -128,9 +136,10 @@ namespace Galery.Server.Controllers
         /// <summary>
         /// Delete like by user to picture
         /// </summary>
-        [HttpDelete("like/{userId}/{pictureId}")]
-        public async Task<IActionResult> RemoveLikeAsync(int userId, int pictureId)
+        [HttpDelete("like/{pictureId}")]
+        public async Task<IActionResult> RemoveLikeAsync(int pictureId)
         {
+            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
             await _service.RemoveLikeAsync(userId, pictureId);
             return Ok();
         }
@@ -139,6 +148,7 @@ namespace Galery.Server.Controllers
         /// Get pictures by tag
         /// </summary>
         [HttpGet("tag/{tagId}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
         public async Task<IActionResult> GetPicturesByTag(int tagId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
@@ -154,10 +164,11 @@ namespace Galery.Server.Controllers
             return Ok(res);
         }
         
-        [HttpGet("fromSubscribes/{userId}")]
+        [HttpGet("fromSubscribes")]       
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
-        public async Task<IActionResult> GetNewPicturesFromSubscribes(int userId, [FromQuery]int skip = 0, [FromQuery]int take = 50)
+        public async Task<IActionResult> GetNewPicturesFromSubscribes([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {
+            var userId = Convert.ToInt32(User.FindFirst(c => c.Type == "Id").Value);
             var res = await _service.GetPicsFromSubscribes(userId, skip, take);
             return Ok(res);
         }

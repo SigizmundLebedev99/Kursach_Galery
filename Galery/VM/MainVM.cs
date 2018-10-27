@@ -12,6 +12,12 @@ namespace Galery.VM
     class MainVM : BaseVM
     {
         public CommonVM CommonVM { get; }
+        public MenuItem[] MenuItems { get; private set; }
+
+        public LoginVM LoginVM { get; }
+        public bool LoginFlip { get; private set; } = false;
+
+        public event Action ContentChanged;
 
         public MainVM()
         {
@@ -37,18 +43,17 @@ namespace Galery.VM
             Content = MenuItems[0].GetContent;
         }
 
-        public MenuItem[] MenuItems { get; private set; }
+        
 
-        public LoginVM LoginVM { get; }
-        public bool LoginFlip { get; private set; } = false;
         public void FlipLoginPlateBack()
         {
             LoginFlip = false;
             OnPropertyChanged("LoginFlip");
         }
 
-        private object _content;
-        public object Content {
+        private FrameworkElement _content;
+
+        public FrameworkElement Content {
             get
             {
                 return _content;
@@ -57,6 +62,7 @@ namespace Galery.VM
             {
                 _content = value;
                 OnPropertyChanged();
+                ContentChanged?.Invoke();
             }
         }
 

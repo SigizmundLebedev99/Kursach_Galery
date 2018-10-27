@@ -37,26 +37,26 @@ namespace Galery.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        options.RequireHttpsMetadata = false;
-                        options.Authority = AuthTokenOptions.AUDIENCE;
-                        options.Audience = AuthTokenOptions.AUDIENCE;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ClockSkew = TimeSpan.FromMinutes(5),
-                            IssuerSigningKey = AuthTokenOptions.GetSymmetricSecurityKey(),
-                            RequireSignedTokens = true,
-                            RequireExpirationTime = true,
+
+            services.AddAuthentication()//(JwtBearerDefaults.AuthenticationScheme)
+                     .AddJwtBearer(options =>
+                     {
+                         options.RequireHttpsMetadata = false;
+                         options.TokenValidationParameters = new TokenValidationParameters
+                         {
+                            ValidateIssuer = true,
+                            
+                            ValidIssuer = AuthTokenOptions.ISSUER,
+                            
+                            ValidateAudience = false,
+                            
                             ValidateLifetime = true,
-                            ValidateAudience = true,
-                            ValidAudience = AuthTokenOptions.AUDIENCE,
-                            ValidateIssuer = false,
-                            ValidIssuer = AuthTokenOptions.ISSUER
-                        };
-                    });
+
+                            IssuerSigningKey = AuthTokenOptions.GetSymmetricSecurityKey(),
+                            
+                            ValidateIssuerSigningKey = true
+                         };
+                     });
 
             services.Configure<IdentityOptions>(options =>
             {

@@ -50,7 +50,9 @@
                                     FontSize="14"
                                     Command="{Binding ElementName=picturesTop, Path=DataContext.CommonVM.SelectPicture}" CommandParameter="{Binding Id}" BorderBrush="White"/>
                             
-                            <Image Grid.Row="1" MinHeight="140" MinWidth="196" Stretch="UniformToFill" Source="{Binding ImagePath, Converter={StaticResource imagePathConverter}}"/>
+                            <Image Grid.Row="1" MinHeight="140" 
+                                   MinWidth="196" Stretch="UniformToFill" 
+                                   Source="{Binding ImagePath, Converter={StaticResource imagePathConverter}}"/>
 
                             <materialDesign:Chip Grid.Row="2"
                                 Command="{Binding ElementName=picturesTop, Path=DataContext.CommonVM.SelectUser}" 
@@ -73,13 +75,7 @@
                                 Grid.Row="3"
                                 Orientation="Horizontal"
                                 Margin="0,4,4,4" Width="60">
-                                <Button
-                                        Style="{StaticResource MaterialDesignToolButton}"
-                                        Width="30"
-                                        Padding="2 0 2 0"
-                                        materialDesign:RippleAssist.IsCentered="True">
-                                        <materialDesign:PackIcon Kind="Heart" />
-                                </Button>
+                                <materialDesign:PackIcon Kind="Heart" Width="30" VerticalAlignment="Center" Foreground="#FF673AB7"/>
                                 <TextBlock Width="auto" Text="{Binding Likes}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Grid>

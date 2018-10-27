@@ -57,7 +57,7 @@
                 <ContentControl Content="{Binding Content}" MinHeight="50" MinWidth="50" Margin="6" />
                 <Button Command="{Binding ChoosePicture}"
                 Style="{StaticResource MaterialDesignFloatingActionMiniLightButton}"
-                ToolTip="MaterialDesignFloatingActionMiniLightButton">
+                ToolTip="Добавить изображение">
                     <materialDesign:PackIcon
                     Kind="FileImage"
                     Height="24"

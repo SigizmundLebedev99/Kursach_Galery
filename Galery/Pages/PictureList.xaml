@@ -25,7 +25,12 @@
                 Foreground="#FF673AB7"/>
             <resources:Loading Width="120" HorizontalAlignment="Right" Visibility="{Binding LoadingVisibility}"/>
         </DockPanel>
-        <ItemsControl ItemsSource="{Binding PictureList}">
+        <ItemsControl ItemsSource="{Binding PicturesList}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <materialDesign:Card Width="234" Margin="15" Height="270">
@@ -59,7 +64,10 @@
                                     </Image>
                                 </materialDesign:Chip.Icon>
                             </materialDesign:Chip>
-                            <TextBlock Grid.Row="3" VerticalAlignment="Center" Margin="10 0" 
+                            <TextBlock Grid.Row="3" 
+                                       VerticalAlignment="Center" 
+                                       Margin="10 0"
+                                       HorizontalAlignment="Right"
                                        Text="{Binding DateOfCreation, Converter={StaticResource dateConverter}}"
                                        FontSize="11"/>
                         </Grid>

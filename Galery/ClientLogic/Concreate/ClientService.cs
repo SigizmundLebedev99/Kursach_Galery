@@ -36,7 +36,13 @@ namespace Galery.ClientLogic.Concreate
 
         public void SetAutenticationHeader(TokenResponse token)
         {
-            
+            if (_httpClient.DefaultRequestHeaders.Any(h => h.Key == "Authorization"))
+            {
+                _httpClient.DefaultRequestHeaders.Remove("Authorization");
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.Access_token}");
+            }
+            else
+                _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.Access_token}");
         }
     }
 }

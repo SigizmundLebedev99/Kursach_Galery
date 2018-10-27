@@ -22,11 +22,13 @@ namespace Galery
     public partial class MainWindow : Window
     {
         readonly MainVM MainVm;
+
         public MainWindow()
         {
             InitializeComponent();
             MainVm = (MainVM)this.DataContext;
-            MainVm.SetPassFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);           
+            MainVm.SetPassFunc(() => PasswordBox.Password, ()=>PasswordBox.Password = string.Empty);
+            MainVm.ContentChanged += () => MainScrollViewer.ScrollToTop();
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
