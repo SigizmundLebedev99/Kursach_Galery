@@ -16,6 +16,13 @@
     </UserControl.Resources>
     <StackPanel>
         <DockPanel>
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    IsCancel="True"
+                    Margin="15"
+                    DockPanel.Dock="Left"
+                    Command="{Binding BackToPrevious}">
+                <materialDesign:PackIcon Kind="ArrowLeft" Height="25" Width="25"/>
+            </Button>
             <TextBlock 
                 Margin="15"
                 Text="{Binding Header, Mode=OneTime}" 
@@ -75,6 +82,6 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
-        <Button Content="Еще" Style="{StaticResource MaterialDesignFlatButton}"/>
+        <Button Content="загрузить еще" Style="{StaticResource MaterialDesignFlatButton}" Command="{Binding LoadMore}" IsEnabled="{Binding IsUploadingEnable}"/>
     </StackPanel>
 </UserControl>

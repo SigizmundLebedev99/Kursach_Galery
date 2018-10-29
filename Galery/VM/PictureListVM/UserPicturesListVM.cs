@@ -24,7 +24,7 @@ namespace Galery.VM
             LoadData(userId);
         }
 
-        public async Task LoadData(int userId)
+        public async void LoadData(int userId)
         {
             var res = await App.ClientService.Picture.GetByUser(userId, 0, 200);
             if (res.IsSuccessStatusCode)

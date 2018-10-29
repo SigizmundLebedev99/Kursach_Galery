@@ -100,6 +100,25 @@ namespace Galery.Server.Service.Services
             }
         }
 
+        public async Task<UserInfoDTO> GetUserInfo(int userId, int fromUserId)
+        {
+            try
+            {
+                using (var connection = _factory.CreateConnection())
+                {
+                    await Connect(connection);
+                    var res = await connection.QueryFirstOrDefaultAsync<UserInfoDTO>("GetUserInfoAuth", new { userId, fromUserId}, null, null, System.Data.CommandType.StoredProcedure);
+                    res = res ?? throw new NotFoundException($"Не удалось найти пользователя с id = {userId}");
+                    return res;
+                }
+            }
+            catch (NotFoundException) { throw; }
+            catch (Exception ex)
+            {
+                throw new DatabaseException("Не удалось извлечь данные", ex.Message);
+            }
+        }
+
         public async Task<OperationResult<UserDTO>> Subscribing(Subscribe model)
         {
             try

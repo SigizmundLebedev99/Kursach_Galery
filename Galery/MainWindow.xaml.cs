@@ -31,10 +31,16 @@ namespace Galery
             MainVm.ContentChanged += () => MainScrollViewer.ScrollToTop();
         }
 
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        private void MenuListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var content = (VM.MenuItem)MenuListBox.SelectedItem;
             MainVm.Content = content?.GetContent;
+        }
+
+        private void MenuListBox_Selected(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

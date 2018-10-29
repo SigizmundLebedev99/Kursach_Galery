@@ -18,8 +18,6 @@ namespace Galery.ClientLogic
 
         Task<HttpResponseMessage> GetPictureById(int id);
 
-        Task<HttpResponseMessage> GetPictureByIdAnon(int id);
-
         Task<HttpResponseMessage> GetLikedByUser(int userId, int? skip, int? take);
 
         Task<HttpResponseMessage> GetByUser(int user, int? skip, int? take);

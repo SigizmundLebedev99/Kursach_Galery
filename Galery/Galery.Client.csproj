@@ -119,6 +119,7 @@
     <Compile Include="Resources\UserPicturesList.xaml.cs">
       <DependentUpon>UserPicturesList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="VM\AuthorsVM.cs" />
     <Compile Include="VM\Base\BasePageVM.cs" />
     <Compile Include="VM\Base\BasePictureListVM.cs" />
     <Compile Include="VM\Base\BaseVM.cs" />
@@ -130,9 +131,12 @@
     <Compile Include="VM\Helpers\DelegateCommand.cs" />
     <Compile Include="VM\Helpers\ImagePathConverter.cs" />
     <Compile Include="VM\Helpers\MenuItem.cs" />
-    <Compile Include="VM\LikedPictureListVM.cs" />
-    <Compile Include="VM\LikeVM.cs" />
-    <Compile Include="VM\PictureListForTagVM.cs" />
+    <Compile Include="VM\Helpers\SubscribeVM.cs" />
+    <Compile Include="VM\PictureListVM\AllPictureListVM.cs" />
+    <Compile Include="VM\PictureListVM\LikedPictureListVM.cs" />
+    <Compile Include="VM\Helpers\LikeVM.cs" />
+    <Compile Include="VM\PictureListVM\PictureListForTagVM.cs" />
+    <Compile Include="VM\PictureListVM\PicturesFromSubscribesVM.cs" />
     <Compile Include="VM\SubscribersVM.cs" />
     <Compile Include="VM\SubscribesVM.cs" />
     <Compile Include="VM\Helpers\UserVM.cs" />
@@ -143,7 +147,7 @@
     <Compile Include="VM\TagListVM.cs" />
     <Compile Include="VM\TopPicturesVM.cs" />
     <Compile Include="VM\UserInfoVM.cs" />
-    <Compile Include="VM\UserPicturesListVM.cs" />
+    <Compile Include="VM\PictureListVM\UserPicturesListVM.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

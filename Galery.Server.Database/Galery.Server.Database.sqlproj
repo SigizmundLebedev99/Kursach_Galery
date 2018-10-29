@@ -78,6 +78,7 @@
     <Build Include="Procedure\GetUserInfo.sql" />
     <Build Include="Procedure\GetSubscribersForUser.sql" />
     <Build Include="Procedure\UserSearch.sql" />
+    <Build Include="Procedure\GetUserInfoAuth.sql" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\ApplicationUser.sql" />

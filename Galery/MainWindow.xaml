@@ -19,7 +19,7 @@
                     <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="48" FontFamily="Palace Script MT">Galery</TextBlock>
                 </DockPanel>
             </materialDesign:ColorZone>
-            <Expander ExpandDirection="Right" Margin="0 10">
+            <Expander ExpandDirection="Left" Margin="0 10">
                 <Expander.Header>
                     <TextBlock Text="Меню" RenderTransformOrigin=".5,.5" FontSize="14" FontWeight="Bold">
                         <TextBlock.LayoutTransform>
@@ -33,7 +33,7 @@
                         HorizontalAlignment="Center" 
                         IsFlipped="{Binding LoginFlip}" 
                         FontFamily="Segoe UI Semibold"
-                        Margin="10">
+                        Margin="10 0">
                         <materialDesign:Flipper.FrontContent>
                             <Grid Height="256" Width="256">
                                 <Grid.RowDefinitions>
@@ -144,7 +144,7 @@
                     <ListBox Margin="0 16 0 16"                       
                              x:Name="MenuListBox"
                              ItemsSource="{Binding MenuItems}"
-                             SelectionChanged="ListBox_SelectionChanged">
+                             SelectionChanged="MenuListBox_SelectionChanged">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="32 0 32 0" FontSize="14" FontWeight="Bold"/>

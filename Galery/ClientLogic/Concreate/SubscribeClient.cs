@@ -18,16 +18,9 @@ namespace Galery.ClientLogic.Concreate
             _client = client;
         }
 
-        public Task<HttpResponseMessage> Desubscribing(Subscribe model)
-        {
-            HttpRequestMessage mess = new HttpRequestMessage
-            {
-                Content = new StringContent("", Encoding.Unicode, JsonConvert.SerializeObject(model)),
-                Method = HttpMethod.Delete,
-                RequestUri = new Uri("/api/Subscribe")
-            };
-
-            return _client.SendAsync(mess);
+        public Task<HttpResponseMessage> Desubscribing(int toId)
+        {            
+            return _client.DeleteAsync($"/api/Subscribe/{toId}");
         }
 
         public Task<HttpResponseMessage> GetSubscribers(int userId)
@@ -45,9 +38,14 @@ namespace Galery.ClientLogic.Concreate
             return _client.GetAsync($"/api/Subscribe/userinfo/{userId}");
         }
 
-        public Task<HttpResponseMessage> Subscribing(Subscribe model)
+        public Task<HttpResponseMessage> Subscribing(int toId)
         {
-            return _client.PostAsJsonAsync($"/api/Subscribe", model);
+            return _client.PostAsJsonAsync<object>($"/api/Subscribe/{toId}", null);
+        }
+
+        public Task<HttpResponseMessage> UserSearch(string search)
+        {
+            return _client.GetAsync($"/api/Subscribe/search/{search}");
         }
     }
 }

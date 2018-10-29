@@ -3,12 +3,7 @@ using Galery.Pages;
 using Galery.Resources;
 using Galery.VM.Helpers;
 using MaterialDesignThemes.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -46,6 +41,8 @@ namespace Galery.VM
                 };
             LoadData(userId, role);
         }
+
+        public SubscribeVM SubscribeVM { get; private set; }
 
         public MenuItem[] MenuItems { get; set; }
 
@@ -92,12 +89,17 @@ namespace Galery.VM
 
         public UserInfoDTO User { get; private set; }
 
-        private async Task LoadData(int userId, Roles role)
+        private async void LoadData(int userId, Roles role)
         {
             var res = await App.ClientService.Subscribe.GetUserInfo(userId);
             if (res.IsSuccessStatusCode)
             {
                 User = await res.Content.ReadAsAsync<UserInfoDTO>();
+                if(role != Roles.Unauthorized)
+                {
+                    SubscribeVM = new SubscribeVM(User.IsInSubscribes, userId);
+                    OnPropertyChanged("SubscribeVM");
+                }
                 OnPropertyChanged("User");
                 LoadingVizibility = Visibility.Collapsed;
                 OnPropertyChanged("LoadingVizibility");

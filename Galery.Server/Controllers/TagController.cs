@@ -1,6 +1,7 @@
 ﻿using Galery.Server.DAL.Models;
 using Galery.Server.Service.DTO.PictureDTO;
 using Galery.Server.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 namespace Galery.Server.Controllers
 {
     [Route("api/tag")]
+    [Authorize(AuthenticationSchemes = "Bearer")]
     public class TagController : Controller
     {
         readonly ITagService _service;
@@ -27,6 +29,7 @@ namespace Galery.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAllTags()
         {
             var res = await _service.GetAllTags();

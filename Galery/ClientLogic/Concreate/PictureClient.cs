@@ -48,17 +48,12 @@ namespace Galery.ClientLogic.Concreate
 
         public Task<HttpResponseMessage> GetNewPicturesFromSubscribes(int userId, int? skip, int? take)
         {
-            return _client.GetAsync($"fromSubscribes/{userId}" + SkipTakeQuery(skip, take));
+            return _client.GetAsync($"/api/picture/fromSubscribes" + SkipTakeQuery(skip, take));
         }
 
         public Task<HttpResponseMessage> GetPictureById(int id)
         {
             return _client.GetAsync($"/api/picture/{id}");
-        }
-
-        public Task<HttpResponseMessage> GetPictureByIdAnon(int id)
-        {
-            return _client.GetAsync($"/api/picture/anon/{id}");
         }
 
         public Task<HttpResponseMessage> GetPicturesByTag(int tagId, int? skip, int? take)
@@ -91,12 +86,12 @@ namespace Galery.ClientLogic.Concreate
             var path = new StringBuilder();
             if (skip.HasValue)
             {
-                path.Append($"{path}?skip={skip.Value}");
+                path.Append($"?skip={skip.Value}");
                 if (take.HasValue)
-                    path.Append($"{path}&take={take.Value}");
+                    path.Append($"&take={take.Value}");
             }
-            if (take.HasValue)
-                path.Append($"{path}?take={take.Value}");
+            else if (take.HasValue)
+                path.Append($"?take={take.Value}");
             return path.ToString();
         }
     }

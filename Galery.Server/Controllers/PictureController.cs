@@ -63,22 +63,16 @@ namespace Galery.Server.Controllers
         /// Get full info about picture by id for authentificated user
         /// </summary>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
         public async Task<IActionResult> GetPictureById(int id)
         {
-            var userId = User.GetUserId();
-            var res = await _service.GetPictureByIdAsync(id, userId);
-            return this.GetResult(res, true);
-        }
-
-        /// <summary>
-        /// Get full info about picture by id for anon
-        /// </summary>
-        [HttpGet("anon/{id}")]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(PictureFullInfoDTO), 200)]
-        public async Task<IActionResult> GetPictureByIdAnonimous(int id)
-        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.GetUserId();
+                var result = await _service.GetPictureByIdAsync(id, userId);
+                return this.GetResult(result, true);
+            }
             var res = await _service.GetPictureByIdAnonimousAsync(id);
             return Ok(res);
         }
@@ -156,6 +150,7 @@ namespace Galery.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(IEnumerable<PictureInfoDTO>), 200)]
         public async Task<IActionResult> GetNewPictures([FromQuery]int skip = 0, [FromQuery]int take = 50)
         {

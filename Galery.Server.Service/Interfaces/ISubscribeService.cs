@@ -14,5 +14,6 @@ namespace Galery.Server.Service.Interfaces
         Task<IEnumerable<UserDTO>> GetSubscribes(int userId);
         Task<IEnumerable<UserDTO>> GetSubscribers(int userId);
         Task<IEnumerable<UserDTO>> UserSearch(string name);
+        Task<UserInfoDTO> GetUserInfo(int userId, int fromUserId);
     }
 }

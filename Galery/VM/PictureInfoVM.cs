@@ -69,19 +69,9 @@ namespace Galery.VM
             }
         }
 
-        private async Task LoadData(int pictureId, Roles role)
+        private async void LoadData(int pictureId, Roles role)
         {
-            HttpResponseMessage res = null;
-
-            if (role == Roles.Unauthorized)
-            {
-                res = await App.ClientService.Picture.GetPictureByIdAnon(pictureId);               
-            }
-            else
-            {
-                res = await App.ClientService.Picture.GetPictureById(pictureId);     
-            }
-
+            var res = await App.ClientService.Picture.GetPictureById(pictureId);     
             if (res.IsSuccessStatusCode)
             {
                 Picture = await res.Content.ReadAsAsync<PictureFullInfoDTO>();

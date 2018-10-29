@@ -101,7 +101,6 @@ namespace Galery.Server
             services.AddTransient<IPictureService, PicturesService>();
             services.AddTransient<IFileWorkService, FileWorkService>();
             services.AddTransient<ITagService, TagService>();
-            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddTransient<ICommentService, CommentService>();
             services.AddTransient<ISubscribeService, SubscribeService>();

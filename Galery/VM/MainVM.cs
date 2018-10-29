@@ -112,12 +112,12 @@ namespace Galery.VM
             MenuItems = new MenuItem[]
             {
                 new MenuItem("Моя галерея",()=>new UserInfo(), ()=>new UserInfoVM(this, userId, Roles.Authorized)),
-                new MenuItem("Новые",()=>null),
+                new MenuItem("Новые",()=>new PictureList(), ()=>new PicturesFromSubscribesVM(User.UserId, this)),
                 new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
-                new MenuItem("Понравившиеся",()=>null),
-                new MenuItem("Подписки",()=>null),
+                new MenuItem("Понравившиеся",()=>new PictureList(), ()=>new LikedPictureListVM(User.UserId, this)),
+                new MenuItem("Авторы",()=>new Authors(), ()=>new AuthorsVM(this)),
                 new MenuItem("Жанры",()=>new TagList(), ()=>new TagListVM(this)),
-                new MenuItem("Вся база",()=>null)
+                new MenuItem("Вся база",()=>new PictureList(), ()=>new AllPictureListVM(this))
             };
         }
 
@@ -126,9 +126,9 @@ namespace Galery.VM
             MenuItems = new MenuItem[]
             {
                 new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
-                new MenuItem("Авторы",()=>null),
+                new MenuItem("Авторы",()=>new Authors(), ()=>new AuthorsVM(this)),
                 new MenuItem("Жанры",()=>new TagList(), ()=>new TagListVM(this)),
-                new MenuItem("Вся база",()=>null)
+                new MenuItem("Вся база",()=>new PictureList(), ()=>new AllPictureListVM(this))
             };
         }
 
@@ -137,9 +137,9 @@ namespace Galery.VM
             MenuItems = new MenuItem[]
             {
                 new MenuItem("Топ лучших",()=>new TopPictures(),()=>new TopPicturesVM(this)),
-                new MenuItem("Авторы", ()=>null),
+                new MenuItem("Авторы", ()=>new Authors(), ()=>new AuthorsVM(this)),
                 new MenuItem("Жанры",()=>new TagList(), ()=>new TagListVM(this)),
-                new MenuItem("Вся база",()=>null)
+                new MenuItem("Вся база",()=>new PictureList(), ()=>new AllPictureListVM(this))
             };
         }
     }
